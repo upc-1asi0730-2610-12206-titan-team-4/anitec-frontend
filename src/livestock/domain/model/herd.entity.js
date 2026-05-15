@@ -1,27 +1,37 @@
 /**
- * Represents an animal registered inside a farm or herd.
+ * Represents a rancher's farm or herd.
  */
-export class Animal {
-
+export class Herd {
     /**
-     * Creates an animal with its main data and converts numeric values when needed.
-     * @param {Object} animal Animal data.
+     * Creates a farm with owner, location, and main type.
+     * @param {Object} herd Farm data.
      */
-    constructor({ id = null, tag = '', name = '', species = 'Bovino', breed = '', gender = '', birthDate = '', weight = 0, status = 'Saludable', herdId = null }) {
+    constructor({
+        id = null,
+        name = "",
+        location = "",
+        owner = "",
+        ownerId = null,
+        veterinarianId = null,
+        mainType = "Mixto",
+    }) {
         this.id = id;
-        this.tag = tag;
         this.name = name;
-        this.species = species;
-        this.breed = breed;
-        this.gender = gender;
-        this.birthDate = birthDate;
-        this.weight = Number(weight);
-        this.status = status;
+        this.location = location;
+        this.owner = owner;
 
-        if (herdId) {
-            this.herdId = Number(herdId);
+        if (ownerId) {
+            this.ownerId = Number(ownerId);
         } else {
-            this.herdId = null;
+            this.ownerId = null;
         }
+
+        if (veterinarianId) {
+            this.veterinarianId = Number(veterinarianId);
+        } else {
+            this.veterinarianId = null;
+        }
+
+        this.mainType = mainType;
     }
 }
