@@ -1,65 +1,65 @@
-import {defineStore} from "pinia";
-import {computed, ref} from "vue";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
 
 const defaultDemoUsers = [
     {
         id: 1,
-        username: 'ganadero',
-        password: 'anitec123',
-        role: 'rancher',
-        fullName: 'Carlos Mendoza',
-        veterinarianId: 2
+        username: "ganadero",
+        password: "anitec123",
+        role: "rancher",
+        fullName: "Carlos Mendoza",
+        veterinarianId: 2,
     },
     {
         id: 2,
-        username: 'veterinaria',
-        password: 'anitec123',
-        role: 'veterinarian',
-        fullName: 'Dra. Ana Lopez'
+        username: "veterinaria",
+        password: "anitec123",
+        role: "veterinarian",
+        fullName: "Dra. Ana Lopez",
     },
     {
         id: 3,
-        username: 'maria',
-        password: 'anitec123',
-        role: 'rancher',
-        fullName: 'Maria Gonzales',
-        veterinarianId: 2
+        username: "maria",
+        password: "anitec123",
+        role: "rancher",
+        fullName: "Maria Gonzales",
+        veterinarianId: 2,
     },
     {
         id: 4,
-        username: 'jose',
-        password: 'anitec123',
-        role: 'rancher',
-        fullName: 'Jose Quispe',
-        veterinarianId: 5
+        username: "jose",
+        password: "anitec123",
+        role: "rancher",
+        fullName: "Jose Quispe",
+        veterinarianId: 5,
     },
     {
         id: 5,
-        username: 'vetpedro',
-        password: 'anitec123',
-        role: 'veterinarian',
-        fullName: 'Dr. Pedro Ramirez'
+        username: "vetpedro",
+        password: "anitec123",
+        role: "veterinarian",
+        fullName: "Dr. Pedro Ramirez",
     },
     {
         id: 6,
-        username: 'rosa',
-        password: 'anitec123',
-        role: 'rancher',
-        fullName: 'Rosa Huaman',
-        veterinarianId: 7
+        username: "rosa",
+        password: "anitec123",
+        role: "rancher",
+        fullName: "Rosa Huaman",
+        veterinarianId: 7,
     },
     {
         id: 7,
-        username: 'vetlucia',
-        password: 'anitec123',
-        role: 'veterinarian',
-        fullName: 'Dra. Lucia Torres'
-    }
+        username: "vetlucia",
+        password: "anitec123",
+        role: "veterinarian",
+        fullName: "Dra. Lucia Torres",
+    },
 ];
 
-const sessionKey = 'anitec-session';
+const sessionKey = "anitec-session";
 
-const demoUsersKey = 'anitec-demo-users';
+const demoUsersKey = "anitec-demo-users";
 
 /**
  * Reads the session saved in localStorage.
@@ -102,8 +102,7 @@ const saveDemoUsers = (users) => {
 /**
  * Store that manages the current session and demo users.
  */
-const useIamStore = defineStore('iam', () => {
-
+const useIamStore = defineStore("iam", () => {
     const savedSession = readSession();
 
     const demoUsers = ref(readDemoUsers());
@@ -141,7 +140,7 @@ const useIamStore = defineStore('iam', () => {
             return currentUser.value.fullName;
         }
 
-        return '';
+        return "";
     });
 
     /**
@@ -151,8 +150,7 @@ const useIamStore = defineStore('iam', () => {
      * @returns {boolean}
      */
     function signIn(credentials, router) {
-
-        let username = '';
+        let username = "";
 
         if (credentials.username) {
             username = credentials.username.trim();
@@ -163,16 +161,19 @@ const useIamStore = defineStore('iam', () => {
         for (let i = 0; i < demoUsers.value.length; i++) {
             const item = demoUsers.value[i];
 
-            if (item.username === username && item.password === credentials.password) {
+            if (
+                item.username === username &&
+                item.password === credentials.password
+            ) {
                 user = item;
             }
         }
 
         if (!user) {
-            errors.value = [new Error('Invalid credentials')];
+            errors.value = [new Error("Invalid credentials")];
             return false;
         }
-        
+
         let veterinarianId = null;
 
         if (user.veterinarianId) {
@@ -184,16 +185,17 @@ const useIamStore = defineStore('iam', () => {
             username: user.username,
             role: user.role,
             fullName: user.fullName,
-            veterinarianId: veterinarianId
+            veterinarianId: veterinarianId,
         };
 
         currentUser.value = session;
         errors.value = [];
         localStorage.setItem(sessionKey, JSON.stringify(session));
-        localStorage.setItem('token', `demo-token-${user.role}`);
+        localStorage.setItem("token", `demo-token-${user.role}`);
 
-        if (user.role === 'rancher') router.push({name: 'rancher-dashboard'});
-        if (user.role === 'veterinarian') router.push({name: 'veterinarian-dashboard'});
+        if (user.role === "rancher") router.push({ name: "rancher-dashboard" });
+        if (user.role === "veterinarian")
+            router.push({ name: "veterinarian-dashboard" });
         return true;
     }
 
@@ -203,14 +205,19 @@ const useIamStore = defineStore('iam', () => {
      * @param {number|string} veterinarianId Veterinarian identifier.
      * @returns {boolean}
      */
-    function assignRancherToVeterinarian(rancherId, veterinarianId = currentUserId.value) {
-
+    function assignRancherToVeterinarian(
+        rancherId,
+        veterinarianId = currentUserId.value,
+    ) {
         let rancherIndex = -1;
 
         for (let i = 0; i < demoUsers.value.length; i++) {
             const user = demoUsers.value[i];
 
-            if (user.role === 'rancher' && Number(user.id) === Number(rancherId)) {
+            if (
+                user.role === "rancher" &&
+                Number(user.id) === Number(rancherId)
+            ) {
                 rancherIndex = i;
             }
         }
@@ -220,7 +227,10 @@ const useIamStore = defineStore('iam', () => {
         for (let i = 0; i < demoUsers.value.length; i++) {
             const user = demoUsers.value[i];
 
-            if (user.role === 'veterinarian' && Number(user.id) === Number(veterinarianId)) {
+            if (
+                user.role === "veterinarian" &&
+                Number(user.id) === Number(veterinarianId)
+            ) {
                 veterinarian = user;
             }
         }
@@ -244,15 +254,17 @@ const useIamStore = defineStore('iam', () => {
      * @param {number|string} veterinarianId Veterinarian identifier.
      * @returns {boolean}
      */
-    function unassignRancherFromVeterinarian(rancherId, veterinarianId = currentUserId.value) {
-
+    function unassignRancherFromVeterinarian(
+        rancherId,
+        veterinarianId = currentUserId.value,
+    ) {
         let rancherIndex = -1;
 
         for (let i = 0; i < demoUsers.value.length; i++) {
             const user = demoUsers.value[i];
 
             if (
-                user.role === 'rancher' &&
+                user.role === "rancher" &&
                 Number(user.id) === Number(rancherId) &&
                 Number(user.veterinarianId) === Number(veterinarianId)
             ) {
@@ -275,10 +287,10 @@ const useIamStore = defineStore('iam', () => {
         currentUser.value = null;
         errors.value = [];
         localStorage.removeItem(sessionKey);
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
 
         if (router) {
-            router.push({name: 'iam-sign-in'});
+            router.push({ name: "iam-sign-in" });
         }
     }
 
@@ -293,7 +305,7 @@ const useIamStore = defineStore('iam', () => {
         signIn,
         signOut,
         assignRancherToVeterinarian,
-        unassignRancherFromVeterinarian
+        unassignRancherFromVeterinarian,
     };
 });
 

@@ -1,6 +1,6 @@
 <script setup>
-import {reactive} from "vue";
-import {useRouter} from "vue-router";
+import { reactive } from "vue";
+import { useRouter } from "vue-router";
 import useIamStore from "../../application/iam.store.js";
 
 const router = useRouter();
@@ -8,8 +8,8 @@ const router = useRouter();
 const store = useIamStore();
 
 const form = reactive({
-  username: '',
-  password: ''
+  username: "",
+  password: "",
 });
 
 /**
@@ -18,7 +18,7 @@ const form = reactive({
  */
 const fillDemoUser = (username) => {
   form.username = username;
-  form.password = 'anitec123';
+  form.password = "anitec123";
 };
 
 /**
@@ -35,7 +35,10 @@ const performSignIn = () => {
       <div>
         <span class="section-chip">AniTec Web App</span>
         <h1>Smart livestock management</h1>
-        <p>Sign in as a rancher or veterinarian to see an experience adapted to your responsibilities.</p>
+        <p>
+          Sign in as a rancher or veterinarian to see an experience adapted to
+          your responsibilities.
+        </p>
       </div>
     </section>
 
@@ -87,14 +90,25 @@ const performSignIn = () => {
       <form class="login-form" @submit.prevent="performSignIn">
         <label>
           Username
-          <pv-input-text v-model="form.username" autocomplete="username" required/>
+          <pv-input-text
+            v-model="form.username"
+            autocomplete="username"
+            required
+          />
         </label>
         <label>
           Password
-          <pv-input-text v-model="form.password" autocomplete="current-password" type="password" required/>
+          <pv-input-text
+            v-model="form.password"
+            autocomplete="current-password"
+            type="password"
+            required
+          />
         </label>
-        <p v-if="store.errors.length" class="error-text">{{ store.errors[0].message }}</p>
-        <pv-button label="Enter AniTec" icon="pi pi-sign-in" type="submit"/>
+        <p v-if="store.errors.length" class="error-text">
+          {{ store.errors[0].message }}
+        </p>
+        <pv-button label="Enter AniTec" icon="pi pi-sign-in" type="submit" />
       </form>
     </section>
   </main>
