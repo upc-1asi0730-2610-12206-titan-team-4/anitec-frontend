@@ -1,4 +1,4 @@
-import {Animal} from "../domain/model/animal.entity.js";
+import { Animal } from "../domain/model/animal.entity.js";
 
 /**
  * Converts data received from the API into Animal entities.
@@ -10,7 +10,7 @@ export class AnimalAssembler {
      * @returns {Animal}
      */
     static toEntityFromResource(resource) {
-        return new Animal({...resource});
+        return new Animal({ ...resource });
     }
 
     /**
@@ -21,7 +21,9 @@ export class AnimalAssembler {
     static toEntitiesFromResponse(response) {
         if (response.status !== 200) return [];
 
-        const resources = Array.isArray(response.data) ? response.data : response.data.animals;
-        return resources.map(resource => this.toEntityFromResource(resource));
+        const resources = Array.isArray(response.data)
+            ? response.data
+            : response.data.animals;
+        return resources.map((resource) => this.toEntityFromResource(resource));
     }
 }

@@ -1,15 +1,14 @@
-import {defineStore} from "pinia";
-import {computed, ref} from "vue";
-import {SanitaryApi} from "../infrastructure/sanitary-api.js";
-import {HealthEventAssembler} from "../infrastructure/health-event.assembler.js";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+import { SanitaryApi } from "../infrastructure/sanitary-api.js";
+import { HealthEventAssembler } from "../infrastructure/health-event.assembler.js";
 
 const api = new SanitaryApi();
 
 /**
  * Store that manages animal health records.
  */
-const useSanitaryStore = defineStore('sanitary', () => {
-
+const useSanitaryStore = defineStore("sanitary", () => {
     const healthEvents = ref([]);
 
     const errors = ref([]);
@@ -19,7 +18,7 @@ const useSanitaryStore = defineStore('sanitary', () => {
     const pendingAlerts = computed(() => {
         let total = 0;
 
-        healthEvents.value.forEach(event => {
+        healthEvents.value.forEach((event) => {
             if (event.nextDueDate) {
                 total++;
             }
@@ -33,10 +32,14 @@ const useSanitaryStore = defineStore('sanitary', () => {
      * @returns {Promise}
      */
     function fetchHealthEvents() {
-        return api.getHealthEvents().then(response => {
-            healthEvents.value = HealthEventAssembler.toEntitiesFromResponse(response);
-            loaded.value = true;
-        }).catch(error => errors.value.push(error));
+        return api
+            .getHealthEvents()
+            .then((response) => {
+                healthEvents.value =
+                    HealthEventAssembler.toEntitiesFromResponse(response);
+                loaded.value = true;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -64,8 +67,14 @@ const useSanitaryStore = defineStore('sanitary', () => {
      * @returns {Promise}
      */
     function addHealthEvent(event) {
-        return api.createHealthEvent(event).then(response => healthEvents.value.push(HealthEventAssembler.toEntityFromResource(response.data)))
-            .catch(error => errors.value.push(error));
+        return api
+            .createHealthEvent(event)
+            .then((response) =>
+                healthEvents.value.push(
+                    HealthEventAssembler.toEntityFromResource(response.data),
+                ),
+            )
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -74,22 +83,26 @@ const useSanitaryStore = defineStore('sanitary', () => {
      * @returns {Promise}
      */
     function updateHealthEvent(event) {
-        return api.updateHealthEvent(event).then(response => {
+        return api
+            .updateHealthEvent(event)
+            .then((response) => {
+                const updated = HealthEventAssembler.toEntityFromResource(
+                    response.data,
+                );
 
-            const updated = HealthEventAssembler.toEntityFromResource(response.data);
+                let index = -1;
 
-            let index = -1;
+                for (let i = 0; i < healthEvents.value.length; i++) {
+                    const item = healthEvents.value[i];
 
-            for (let i = 0; i < healthEvents.value.length; i++) {
-                const item = healthEvents.value[i];
-
-                if (Number(item.id) === Number(updated.id)) {
-                    index = i;
+                    if (Number(item.id) === Number(updated.id)) {
+                        index = i;
+                    }
                 }
-            }
 
-            if (index !== -1) healthEvents.value[index] = updated;
-        }).catch(error => errors.value.push(error));
+                if (index !== -1) healthEvents.value[index] = updated;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -98,20 +111,33 @@ const useSanitaryStore = defineStore('sanitary', () => {
      * @returns {Promise}
      */
     function deleteHealthEvent(event) {
-        return api.deleteHealthEvent(event.id).then(() => {
-            const newHealthEvents = [];
+        return api
+            .deleteHealthEvent(event.id)
+            .then(() => {
+                const newHealthEvents = [];
 
-            healthEvents.value.forEach(item => {
-                if (Number(item.id) !== Number(event.id)) {
-                    newHealthEvents.push(item);
-                }
-            });
+                healthEvents.value.forEach((item) => {
+                    if (Number(item.id) !== Number(event.id)) {
+                        newHealthEvents.push(item);
+                    }
+                });
 
-            healthEvents.value = newHealthEvents;
-        }).catch(error => errors.value.push(error));
+                healthEvents.value = newHealthEvents;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
-    return { healthEvents, errors, loaded, pendingAlerts, fetchHealthEvents, getHealthEventById, addHealthEvent, updateHealthEvent, deleteHealthEvent };
+    return {
+        healthEvents,
+        errors,
+        loaded,
+        pendingAlerts,
+        fetchHealthEvents,
+        getHealthEventById,
+        addHealthEvent,
+        updateHealthEvent,
+        deleteHealthEvent,
+    };
 });
 
 export default useSanitaryStore;

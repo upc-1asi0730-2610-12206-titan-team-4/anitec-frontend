@@ -2,12 +2,23 @@
  * Represents a health record associated with an animal.
  */
 export class HealthEvent {
-
     /**
      * Creates a health record with diagnosis, treatment, and follow-up.
      * @param {Object} healthEvent Health record data.
      */
-    constructor({ id = null, animalId = null, type = '', date = '', description = '', veterinarian = '', diagnosis = '', treatment = '', prescription = '', followUp = '', nextDueDate = '' }) {
+    constructor({
+        id = null,
+        animalId = null,
+        type = "",
+        date = "",
+        description = "",
+        veterinarian = "",
+        diagnosis = "",
+        treatment = "",
+        prescription = "",
+        followUp = "",
+        nextDueDate = "",
+    }) {
         this.id = id;
 
         if (animalId) {

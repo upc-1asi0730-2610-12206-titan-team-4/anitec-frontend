@@ -1,15 +1,14 @@
-import {defineStore} from "pinia";
-import {computed, ref} from "vue";
-import {FinancialApi} from "../infrastructure/financial-api.js";
-import {FinancialRecordAssembler} from "../infrastructure/financial-record.assembler.js";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+import { FinancialApi } from "../infrastructure/financial-api.js";
+import { FinancialRecordAssembler } from "../infrastructure/financial-record.assembler.js";
 
 const api = new FinancialApi();
 
 /**
  * Store that manages financial records and their totals.
  */
-const useFinancialStore = defineStore('financial', () => {
-
+const useFinancialStore = defineStore("financial", () => {
     const records = ref([]);
 
     const errors = ref([]);
@@ -19,8 +18,8 @@ const useFinancialStore = defineStore('financial', () => {
     const incomeTotal = computed(() => {
         let total = 0;
 
-        records.value.forEach(record => {
-            if (record.type === 'Ingreso') {
+        records.value.forEach((record) => {
+            if (record.type === "Ingreso") {
                 total = total + Number(record.amount);
             }
         });
@@ -31,8 +30,8 @@ const useFinancialStore = defineStore('financial', () => {
     const expenseTotal = computed(() => {
         let total = 0;
 
-        records.value.forEach(record => {
-            if (record.type === 'Egreso') {
+        records.value.forEach((record) => {
+            if (record.type === "Egreso") {
                 total = total + Number(record.amount);
             }
         });
@@ -47,10 +46,14 @@ const useFinancialStore = defineStore('financial', () => {
      * @returns {Promise}
      */
     function fetchRecords() {
-        return api.getRecords().then(response => {
-            records.value = FinancialRecordAssembler.toEntitiesFromResponse(response);
-            loaded.value = true;
-        }).catch(error => errors.value.push(error));
+        return api
+            .getRecords()
+            .then((response) => {
+                records.value =
+                    FinancialRecordAssembler.toEntitiesFromResponse(response);
+                loaded.value = true;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -78,8 +81,16 @@ const useFinancialStore = defineStore('financial', () => {
      * @returns {Promise}
      */
     function addRecord(record) {
-        return api.createRecord(record).then(response => records.value.push(FinancialRecordAssembler.toEntityFromResource(response.data)))
-            .catch(error => errors.value.push(error));
+        return api
+            .createRecord(record)
+            .then((response) =>
+                records.value.push(
+                    FinancialRecordAssembler.toEntityFromResource(
+                        response.data,
+                    ),
+                ),
+            )
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -88,22 +99,26 @@ const useFinancialStore = defineStore('financial', () => {
      * @returns {Promise}
      */
     function updateRecord(record) {
-        return api.updateRecord(record).then(response => {
+        return api
+            .updateRecord(record)
+            .then((response) => {
+                const updated = FinancialRecordAssembler.toEntityFromResource(
+                    response.data,
+                );
 
-            const updated = FinancialRecordAssembler.toEntityFromResource(response.data);
+                let index = -1;
 
-            let index = -1;
+                for (let i = 0; i < records.value.length; i++) {
+                    const item = records.value[i];
 
-            for (let i = 0; i < records.value.length; i++) {
-                const item = records.value[i];
-
-                if (Number(item.id) === Number(updated.id)) {
-                    index = i;
+                    if (Number(item.id) === Number(updated.id)) {
+                        index = i;
+                    }
                 }
-            }
 
-            if (index !== -1) records.value[index] = updated;
-        }).catch(error => errors.value.push(error));
+                if (index !== -1) records.value[index] = updated;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -112,20 +127,35 @@ const useFinancialStore = defineStore('financial', () => {
      * @returns {Promise}
      */
     function deleteRecord(record) {
-        return api.deleteRecord(record.id).then(() => {
-            const newRecords = [];
+        return api
+            .deleteRecord(record.id)
+            .then(() => {
+                const newRecords = [];
 
-            records.value.forEach(item => {
-                if (Number(item.id) !== Number(record.id)) {
-                    newRecords.push(item);
-                }
-            });
+                records.value.forEach((item) => {
+                    if (Number(item.id) !== Number(record.id)) {
+                        newRecords.push(item);
+                    }
+                });
 
-            records.value = newRecords;
-        }).catch(error => errors.value.push(error));
+                records.value = newRecords;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
-    return { records, errors, loaded, incomeTotal, expenseTotal, balance, fetchRecords, getRecordById, addRecord, updateRecord, deleteRecord };
+    return {
+        records,
+        errors,
+        loaded,
+        incomeTotal,
+        expenseTotal,
+        balance,
+        fetchRecords,
+        getRecordById,
+        addRecord,
+        updateRecord,
+        deleteRecord,
+    };
 });
 
 export default useFinancialStore;

@@ -1,4 +1,4 @@
-import {HealthEvent} from "../domain/model/health-event.entity.js";
+import { HealthEvent } from "../domain/model/health-event.entity.js";
 
 /**
  * Converts data received from the API into HealthEvent entities.
@@ -10,7 +10,7 @@ export class HealthEventAssembler {
      * @returns {HealthEvent}
      */
     static toEntityFromResource(resource) {
-        return new HealthEvent({...resource});
+        return new HealthEvent({ ...resource });
     }
 
     /**
@@ -21,7 +21,9 @@ export class HealthEventAssembler {
     static toEntitiesFromResponse(response) {
         if (response.status !== 200) return [];
 
-        const resources = Array.isArray(response.data) ? response.data : response.data['health-events'];
-        return resources.map(resource => this.toEntityFromResource(resource));
+        const resources = Array.isArray(response.data)
+            ? response.data
+            : response.data["health-events"];
+        return resources.map((resource) => this.toEntityFromResource(resource));
     }
 }

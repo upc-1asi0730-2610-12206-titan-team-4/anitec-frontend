@@ -1,4 +1,4 @@
-import {Herd} from "../domain/model/herd.entity.js";
+import { Herd } from "../domain/model/herd.entity.js";
 
 /**
  * Converts data received from the API into Herd entities.
@@ -10,7 +10,7 @@ export class HerdAssembler {
      * @returns {Herd}
      */
     static toEntityFromResource(resource) {
-        return new Herd({...resource});
+        return new Herd({ ...resource });
     }
 
     /**
@@ -21,7 +21,9 @@ export class HerdAssembler {
     static toEntitiesFromResponse(response) {
         if (response.status !== 200) return [];
 
-        const resources = Array.isArray(response.data) ? response.data : response.data.herds;
-        return resources.map(resource => this.toEntityFromResource(resource));
+        const resources = Array.isArray(response.data)
+            ? response.data
+            : response.data.herds;
+        return resources.map((resource) => this.toEntityFromResource(resource));
     }
 }
