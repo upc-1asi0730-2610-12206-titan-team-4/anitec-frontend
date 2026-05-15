@@ -1,0 +1,160 @@
+{
+  "app": {
+    "name": "AniTec",
+    "tagline": "Smart livestock management"
+  },
+  "option": {
+    "home": "Home",
+    "rancherDashboard": "Rancher panel",
+    "veterinarianDashboard": "Veterinarian panel",
+    "herds": "Farms",
+    "animals": "Animals",
+    "health": "Health",
+    "finance": "Finance",
+    "activities": "Activities",
+    "analytics": "Analytics",
+    "clients": "Clients",
+    "patients": "Patients",
+    "about": "About"
+  },
+  "home": {
+    "title": "Operations dashboard",
+    "content": "Manage animals, health, activities and finances from one platform.",
+    "primaryAction": "Register animal",
+    "secondaryAction": "View analytics"
+  },
+  "dashboards": {
+    "rancherTitle": "Rancher Dashboard",
+    "rancherSubtitle": "Overview of your herd, health alerts, finances and upcoming activities.",
+    "veterinarianTitle": "Veterinarian Dashboard",
+    "veterinarianSubtitle": "Professional view of clients, patients, health care records and follow-ups.",
+    "myHerd": "My herd",
+    "healthAlerts": "Health alerts",
+    "monthlyBalance": "Monthly balance",
+    "upcomingTasks": "Upcoming tasks",
+    "animalsAtRisk": "Animals needing care",
+    "assignedRanchers": "Assigned ranchers",
+    "activePatients": "Active patients",
+    "clinicalRecords": "Clinical records",
+    "recentHealthEvents": "Recent care records",
+    "clientOverview": "Client overview",
+    "pendingFollowUps": "Pending follow-ups",
+    "quickActions": "Quick actions",
+    "registerAnimal": "Register animal",
+    "recordHealthIssue": "Report issue",
+    "scheduleVisit": "Schedule visit",
+    "reviewRecords": "Review records"
+  },
+  "about": {
+    "title": "About AniTec",
+    "content": "AniTec is a web application for small and medium ranchers, veterinarians and rural teams that need traceability, health alerts and better production decisions."
+  },
+  "common": {
+    "new": "New",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "actions": "Actions",
+    "confirmDelete": "Confirm deletion",
+    "errors": "Errors occurred"
+  },
+  "animals": {
+    "title": "Animals",
+    "new": "New animal",
+    "editTitle": "Edit animal",
+    "newTitle": "Register animal",
+    "tag": "Code",
+    "name": "Name",
+    "species": "Animal type",
+    "breed": "Breed",
+    "gender": "Gender",
+    "birthDate": "Birth date",
+    "weight": "Weight (kg)",
+    "status": "Status",
+    "herd": "Herd",
+    "confirmDelete": "Do you want to delete {name}?"
+  },
+  "herds": {
+    "title": "Farms",
+    "subtitle": "Manage your farms, herds or livestock units.",
+    "myFarms": "My farms",
+    "all": "All farms",
+    "new": "New farm",
+    "newTitle": "Add new farm",
+    "editTitle": "Edit farm",
+    "name": "Name",
+    "location": "Location",
+    "mainType": "Main type",
+    "owner": "Owner",
+    "animalCount": "Animal count",
+    "animalsInSelection": "Animals in farm",
+    "confirmDelete": "Do you want to delete {name}?"
+  },
+  "health": {
+    "title": "Health management",
+    "new": "New health event",
+    "editTitle": "Edit health event",
+    "newTitle": "Register health event",
+    "animal": "Animal",
+    "type": "Type",
+    "date": "Date",
+    "description": "Description",
+    "veterinarian": "Veterinarian",
+    "diagnosis": "Diagnosis",
+    "treatment": "Treatment",
+    "prescription": "Prescription",
+    "followUp": "Follow-up",
+    "nextDueDate": "Next due date",
+    "confirmDelete": "Do you want to delete this health event?"
+  },
+  "veterinary": {
+    "clientsTitle": "Assigned ranchers",
+    "clientsSubtitle": "Manage ranches and producers under your health supervision.",
+    "patientsTitle": "Animals by rancher",
+    "patientsSubtitle": "Review active patients and access their clinical history.",
+    "clinicalHistoryTitle": "Clinical history",
+    "clinicalHistorySubtitle": "Complete health record for the selected animal.",
+    "viewPatients": "View animals",
+    "viewHistory": "View history",
+    "owner": "Rancher",
+    "herd": "Herd",
+    "location": "Location"
+  },
+  "finance": {
+    "title": "Financial management",
+    "new": "New transaction",
+    "editTitle": "Edit transaction",
+    "newTitle": "Register transaction",
+    "type": "Type",
+    "category": "Category",
+    "amount": "Amount",
+    "date": "Date",
+    "description": "Description",
+    "confirmDelete": "Do you want to delete this transaction?"
+  },
+  "activities": {
+    "title": "Calendar and activities",
+    "new": "New activity",
+    "editTitle": "Edit activity",
+    "newTitle": "Schedule activity",
+    "activityTitle": "Title",
+    "type": "Type",
+    "date": "Date",
+    "priority": "Priority",
+    "status": "Status",
+    "confirmDelete": "Do you want to delete {title}?"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Overview of herd, health and productivity.",
+    "healthOverview": "Health status",
+    "financialOverview": "Financial balance",
+    "upcomingActivities": "Upcoming activities"
+  },
+  "page-not-found": {
+    "title": "Page Not Found",
+    "content": "The path {unavailable-route} is not available.",
+    "go-home": "Go Home"
+  }
+}

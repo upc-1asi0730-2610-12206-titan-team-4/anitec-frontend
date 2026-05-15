@@ -1,0 +1,160 @@
+{
+  "app": {
+    "name": "AniTec",
+    "tagline": "Gestion ganadera inteligente"
+  },
+  "option": {
+    "home": "Inicio",
+    "rancherDashboard": "Panel ganadero",
+    "veterinarianDashboard": "Panel veterinario",
+    "herds": "Fincas",
+    "animals": "Animales",
+    "health": "Sanidad",
+    "finance": "Finanzas",
+    "activities": "Actividades",
+    "analytics": "Analiticas",
+    "clients": "Clientes",
+    "patients": "Pacientes",
+    "about": "Acerca de"
+  },
+  "home": {
+    "title": "Panel operativo",
+    "content": "Controla animales, sanidad, actividades y finanzas desde una sola plataforma.",
+    "primaryAction": "Registrar animal",
+    "secondaryAction": "Ver analiticas"
+  },
+  "dashboards": {
+    "rancherTitle": "Dashboard Ganadero",
+    "rancherSubtitle": "Resumen de tu hato, alertas sanitarias, finanzas y proximas actividades.",
+    "veterinarianTitle": "Dashboard Veterinario",
+    "veterinarianSubtitle": "Vista profesional de clientes, pacientes, atenciones sanitarias y seguimientos.",
+    "myHerd": "Mi hato",
+    "healthAlerts": "Alertas sanitarias",
+    "monthlyBalance": "Balance mensual",
+    "upcomingTasks": "Actividades proximas",
+    "animalsAtRisk": "Animales por atender",
+    "assignedRanchers": "Ganaderos asignados",
+    "activePatients": "Pacientes activos",
+    "clinicalRecords": "Registros clinicos",
+    "recentHealthEvents": "Atenciones recientes",
+    "clientOverview": "Resumen por ganadero",
+    "pendingFollowUps": "Seguimientos pendientes",
+    "quickActions": "Acciones rapidas",
+    "registerAnimal": "Registrar animal",
+    "recordHealthIssue": "Reportar incidencia",
+    "scheduleVisit": "Programar visita",
+    "reviewRecords": "Revisar historiales"
+  },
+  "about": {
+    "title": "Acerca de AniTec",
+    "content": "AniTec es una aplicacion web para pequenos y medianos ganaderos, veterinarios y equipos rurales que necesitan trazabilidad, alertas sanitarias y mejores decisiones productivas."
+  },
+  "common": {
+    "new": "Nuevo",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "actions": "Acciones",
+    "confirmDelete": "Confirmar eliminacion",
+    "errors": "Ocurrieron errores"
+  },
+  "animals": {
+    "title": "Animales",
+    "new": "Nuevo animal",
+    "editTitle": "Editar animal",
+    "newTitle": "Registrar animal",
+    "tag": "Codigo",
+    "name": "Nombre",
+    "species": "Animal",
+    "breed": "Raza",
+    "gender": "Sexo",
+    "birthDate": "Nacimiento",
+    "weight": "Peso (kg)",
+    "status": "Estado",
+    "herd": "Hato",
+    "confirmDelete": "Deseas eliminar el animal {name}?"
+  },
+  "herds": {
+    "title": "Fincas",
+    "subtitle": "Administra tus fincas, hatos o unidades ganaderas.",
+    "myFarms": "Mis fincas",
+    "all": "Todas las fincas",
+    "new": "Nueva finca",
+    "newTitle": "Agregar nueva finca",
+    "editTitle": "Editar finca",
+    "name": "Nombre",
+    "location": "Ubicacion",
+    "mainType": "Tipo principal",
+    "owner": "Responsable",
+    "animalCount": "Cantidad de animales",
+    "animalsInSelection": "Animales en finca",
+    "confirmDelete": "Deseas eliminar la finca {name}?"
+  },
+  "health": {
+    "title": "Gestion sanitaria",
+    "new": "Nuevo evento sanitario",
+    "editTitle": "Editar evento sanitario",
+    "newTitle": "Registrar evento sanitario",
+    "animal": "Animal",
+    "type": "Tipo",
+    "date": "Fecha",
+    "description": "Descripcion",
+    "veterinarian": "Veterinario",
+    "diagnosis": "Diagnostico",
+    "treatment": "Tratamiento",
+    "prescription": "Receta",
+    "followUp": "Seguimiento",
+    "nextDueDate": "Proxima fecha",
+    "confirmDelete": "Deseas eliminar este evento sanitario?"
+  },
+  "veterinary": {
+    "clientsTitle": "Ganaderos asignados",
+    "clientsSubtitle": "Gestiona los hatos y productores bajo tu seguimiento sanitario.",
+    "patientsTitle": "Animales por ganadero",
+    "patientsSubtitle": "Consulta pacientes activos y accede a su historial clinico.",
+    "clinicalHistoryTitle": "Historial clinico",
+    "clinicalHistorySubtitle": "Registro sanitario completo del animal seleccionado.",
+    "viewPatients": "Ver animales",
+    "viewHistory": "Ver historial",
+    "owner": "Ganadero",
+    "herd": "Hato",
+    "location": "Ubicacion"
+  },
+  "finance": {
+    "title": "Gestion financiera",
+    "new": "Nuevo movimiento",
+    "editTitle": "Editar movimiento",
+    "newTitle": "Registrar movimiento",
+    "type": "Tipo",
+    "category": "Categoria",
+    "amount": "Monto",
+    "date": "Fecha",
+    "description": "Descripcion",
+    "confirmDelete": "Deseas eliminar este movimiento?"
+  },
+  "activities": {
+    "title": "Calendario y actividades",
+    "new": "Nueva actividad",
+    "editTitle": "Editar actividad",
+    "newTitle": "Programar actividad",
+    "activityTitle": "Titulo",
+    "type": "Tipo",
+    "date": "Fecha",
+    "priority": "Prioridad",
+    "status": "Estado",
+    "confirmDelete": "Deseas eliminar la actividad {title}?"
+  },
+  "analytics": {
+    "title": "Analiticas",
+    "subtitle": "Resumen del hato, sanidad y productividad.",
+    "healthOverview": "Estado sanitario",
+    "financialOverview": "Balance financiero",
+    "upcomingActivities": "Actividades proximas"
+  },
+  "page-not-found": {
+    "title": "Pagina no encontrada",
+    "content": "La ruta {unavailable-route} no esta disponible.",
+    "go-home": "Ir al inicio"
+  }
+}
