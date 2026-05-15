@@ -2,7 +2,6 @@
  * Encapsulates common REST operations for an endpoint.
  */
 export class BaseEndpoint {
-
     /**
      * Receives the base API and the resource path to query.
      * @param {BaseApi} baseApi Base API with Axios configured.

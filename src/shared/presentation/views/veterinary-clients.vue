@@ -1,12 +1,12 @@
 <script setup>
-import {computed, onMounted} from "vue";
-import {useI18n} from "vue-i18n";
-import {useRouter} from "vue-router";
+import { computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import useLivestockStore from "../../../livestock/application/livestock.store.js";
 import useSanitaryStore from "../../../sanitary/application/sanitary.store.js";
 import useIamStore from "../../../iam/application/iam.store.js";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const router = useRouter();
 
@@ -36,13 +36,13 @@ const animalsByClient = (clientId) => livestock.getAnimalsByOwnerId(clientId);
 const healthEventsByClient = (clientId) => {
   const animalIds = [];
 
-  animalsByClient(clientId).forEach(animal => {
+  animalsByClient(clientId).forEach((animal) => {
     animalIds.push(Number(animal.id));
   });
 
   const clientEvents = [];
 
-  sanitary.healthEvents.forEach(event => {
+  sanitary.healthEvents.forEach((event) => {
     if (animalIds.includes(Number(event.animalId))) {
       clientEvents.push(event);
     }
@@ -59,7 +59,7 @@ const healthEventsByClient = (clientId) => {
 const alertsByClient = (clientId) => {
   let total = 0;
 
-  healthEventsByClient(clientId).forEach(event => {
+  healthEventsByClient(clientId).forEach((event) => {
     if (event.nextDueDate) {
       total++;
     }
@@ -76,8 +76,8 @@ const alertsByClient = (clientId) => {
 const speciesByClient = (clientId) => {
   const species = [];
 
-  animalsByClient(clientId).forEach(animal => {
-    let name = 'Sin clasificar';
+  animalsByClient(clientId).forEach((animal) => {
+    let name = "Sin clasificar";
 
     if (animal.species) {
       name = animal.species;
@@ -94,31 +94,31 @@ const speciesByClient = (clientId) => {
 const locationsByClient = (clientId) => {
   const locations = [];
 
-  herdsByClient(clientId).forEach(herd => {
+  herdsByClient(clientId).forEach((herd) => {
     if (herd.location && !locations.includes(herd.location)) {
       locations.push(herd.location);
     }
   });
 
   if (locations.length) {
-    return locations.join(', ');
+    return locations.join(", ");
   }
 
-  return 'Sin ubicacion';
+  return "Sin ubicacion";
 };
 
 const herdNamesByClient = (clientId) => {
   const names = [];
 
-  herdsByClient(clientId).forEach(herd => {
+  herdsByClient(clientId).forEach((herd) => {
     names.push(herd.name);
   });
 
   if (names.length) {
-    return names.join(', ');
+    return names.join(", ");
   }
 
-  return 'Sin fincas';
+  return "Sin fincas";
 };
 
 /**
@@ -130,8 +130,8 @@ const removeClient = (client) => {
 };
 
 const alertSeverity = (clientId) => {
-  if (alertsByClient(clientId)) return 'warn';
-  return 'success';
+  if (alertsByClient(clientId)) return "warn";
+  return "success";
 };
 </script>
 
@@ -140,28 +140,56 @@ const alertSeverity = (clientId) => {
     <div class="panel-header">
       <div>
         <span class="section-chip">Veterinary Workspace</span>
-        <h2>{{ t('veterinary.clientsTitle') }}</h2>
-        <p>{{ t('veterinary.clientsSubtitle') }}</p>
+        <h2>{{ t("veterinary.clientsTitle") }}</h2>
+        <p>{{ t("veterinary.clientsSubtitle") }}</p>
       </div>
-      <pv-button label="Agregar cliente" icon="pi pi-user-plus" @click="router.push('/veterinary/add-client')"/>
+      <pv-button
+        label="Agregar cliente"
+        icon="pi pi-user-plus"
+        @click="router.push('/veterinary/add-client')"
+      />
     </div>
 
     <div class="assigned-client-grid">
-      <article v-for="client in clients" :key="client.id" class="assigned-client-card">
+      <article
+        v-for="client in clients"
+        :key="client.id"
+        class="assigned-client-card"
+      >
         <header>
           <div>
             <span>Ganadero</span>
             <h3>{{ client.fullName }}</h3>
           </div>
-          <pv-tag :value="`${alertsByClient(client.id)} alertas`" :severity="alertSeverity(client.id)"/>
+          <pv-tag
+            :value="`${alertsByClient(client.id)} alertas`"
+            :severity="alertSeverity(client.id)"
+          />
         </header>
 
         <dl>
-          <div><dt>Fincas</dt><dd>{{ herdNamesByClient(client.id) }}</dd></div>
-          <div><dt>Ubicacion</dt><dd>{{ locationsByClient(client.id) }}</dd></div>
-          <div><dt>Animales</dt><dd>{{ animalsByClient(client.id).length }} registrados</dd></div>
-          <div><dt>Tipos</dt><dd>{{ speciesByClient(client.id) }} especies</dd></div>
-          <div><dt>Sanidad</dt><dd>{{ healthEventsByClient(client.id).length }} registros sanitarios</dd></div>
+          <div>
+            <dt>Fincas</dt>
+            <dd>{{ herdNamesByClient(client.id) }}</dd>
+          </div>
+          <div>
+            <dt>Ubicacion</dt>
+            <dd>{{ locationsByClient(client.id) }}</dd>
+          </div>
+          <div>
+            <dt>Animales</dt>
+            <dd>{{ animalsByClient(client.id).length }} registrados</dd>
+          </div>
+          <div>
+            <dt>Tipos</dt>
+            <dd>{{ speciesByClient(client.id) }} especies</dd>
+          </div>
+          <div>
+            <dt>Sanidad</dt>
+            <dd>
+              {{ healthEventsByClient(client.id).length }} registros sanitarios
+            </dd>
+          </div>
         </dl>
 
         <footer>
@@ -169,7 +197,12 @@ const alertSeverity = (clientId) => {
             :label="t('veterinary.viewPatients')"
             icon="pi pi-id-card"
             outlined
-            @click="router.push({path: '/veterinary/patients', query: {clientId: client.id}})"
+            @click="
+              router.push({
+                path: '/veterinary/patients',
+                query: { clientId: client.id },
+              })
+            "
           />
           <pv-button
             label="Eliminar cliente"
@@ -182,6 +215,8 @@ const alertSeverity = (clientId) => {
       </article>
     </div>
 
-    <p v-if="!clients.length" class="empty-state">No tienes clientes ganaderos asignados.</p>
+    <p v-if="!clients.length" class="empty-state">
+      No tienes clientes ganaderos asignados.
+    </p>
   </section>
 </template>

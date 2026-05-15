@@ -14,11 +14,10 @@ export class BaseApi {
     constructor() {
         this.#http = axios.create({
             baseURL: platformApi,
-            headers: { 'Content-Type': 'application/json'}
+            headers: { "Content-Type": "application/json" },
         });
         this.#http.interceptors.request.use((config) => {
-
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             if (token) config.headers.Authorization = `Bearer ${token}`;
             return config;
         });

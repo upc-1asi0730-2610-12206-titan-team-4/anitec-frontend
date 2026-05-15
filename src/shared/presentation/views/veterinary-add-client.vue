@@ -1,6 +1,6 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {useRouter} from "vue-router";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import useIamStore from "../../../iam/application/iam.store.js";
 import useLivestockStore from "../../../livestock/application/livestock.store.js";
 
@@ -10,7 +10,7 @@ const iam = useIamStore();
 
 const livestock = useLivestockStore();
 
-const search = ref('');
+const search = ref("");
 
 onMounted(async () => {
   if (!livestock.herds.length) await livestock.fetchHerds();
@@ -23,8 +23,8 @@ onMounted(async () => {
 const ranchers = computed(() => {
   const rancherUsers = [];
 
-  iam.demoUsers.forEach(user => {
-    if (user.role === 'rancher') {
+  iam.demoUsers.forEach((user) => {
+    if (user.role === "rancher") {
       rancherUsers.push(user);
     }
   });
@@ -36,20 +36,19 @@ const ranchers = computed(() => {
  * Filters ranchers by name or by their farm names.
  */
 const filteredRanchers = computed(() => {
-
   const term = search.value.trim().toLowerCase();
   if (!term) return ranchers.value;
 
   const results = [];
 
-  ranchers.value.forEach(rancher => {
+  ranchers.value.forEach((rancher) => {
     const herdNames = [];
 
-    livestock.getHerdsByOwnerId(rancher.id).forEach(herd => {
+    livestock.getHerdsByOwnerId(rancher.id).forEach((herd) => {
       herdNames.push(herd.name);
     });
 
-    const text = `${rancher.fullName} ${herdNames.join(' ')}`.toLowerCase();
+    const text = `${rancher.fullName} ${herdNames.join(" ")}`.toLowerCase();
 
     if (text.includes(term)) {
       results.push(rancher);
@@ -65,11 +64,11 @@ const filteredRanchers = computed(() => {
  * @returns {string}
  */
 const initials = (name) => {
-  const parts = name.split(' ');
-  let result = '';
+  const parts = name.split(" ");
+  let result = "";
   let usedParts = 0;
 
-  parts.forEach(part => {
+  parts.forEach((part) => {
     if (part && usedParts < 2) {
       result = result + part[0];
       usedParts++;
@@ -79,11 +78,13 @@ const initials = (name) => {
   return result.toUpperCase();
 };
 
-const isAssignedToCurrentVet = (rancher) => Number(rancher.veterinarianId) === Number(iam.currentUserId);
+const isAssignedToCurrentVet = (rancher) =>
+  Number(rancher.veterinarianId) === Number(iam.currentUserId);
 
 const herdsByRancher = (rancherId) => livestock.getHerdsByOwnerId(rancherId);
 
-const animalCountByRancher = (rancherId) => livestock.getAnimalsByOwnerId(rancherId).length;
+const animalCountByRancher = (rancherId) =>
+  livestock.getAnimalsByOwnerId(rancherId).length;
 
 /**
  * Simulates the request to add a rancher to the veterinarian portfolio.
@@ -100,32 +101,57 @@ const sendRequest = (rancher) => {
       <div>
         <span class="section-chip">Clientes ganaderos</span>
         <h2>Agregar cliente</h2>
-        <p>Busca ganaderos registrados y envia una peticion para acceder a sus datos productivos y sanitarios.</p>
+        <p>
+          Busca ganaderos registrados y envia una peticion para acceder a sus
+          datos productivos y sanitarios.
+        </p>
       </div>
-      <pv-button label="Volver a clientes" icon="pi pi-arrow-left" severity="secondary" outlined @click="router.push('/veterinary/clients')"/>
+      <pv-button
+        label="Volver a clientes"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        outlined
+        @click="router.push('/veterinary/clients')"
+      />
     </div>
 
     <div class="client-discovery-toolbar">
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
-        <pv-input-text v-model="search" placeholder="Buscar por nombre del ganadero o finca"/>
+        <pv-input-text
+          v-model="search"
+          placeholder="Buscar por nombre del ganadero o finca"
+        />
       </span>
       <small>{{ filteredRanchers.length }} ganaderos encontrados</small>
     </div>
 
     <div class="client-discovery-grid">
-      <article v-for="rancher in filteredRanchers" :key="rancher.id" class="client-discovery-card">
+      <article
+        v-for="rancher in filteredRanchers"
+        :key="rancher.id"
+        class="client-discovery-card"
+      >
         <div class="client-profile">
-          <div class="client-avatar" aria-hidden="true">{{ initials(rancher.fullName) }}</div>
+          <div class="client-avatar" aria-hidden="true">
+            {{ initials(rancher.fullName) }}
+          </div>
           <div>
             <h3>{{ rancher.fullName }}</h3>
-            <span>{{ herdsByRancher(rancher.id).length }} fincas - {{ animalCountByRancher(rancher.id) }} animales</span>
+            <span
+              >{{ herdsByRancher(rancher.id).length }} fincas -
+              {{ animalCountByRancher(rancher.id) }} animales</span
+            >
           </div>
         </div>
 
         <div class="farm-chip-list">
-          <span v-for="herd in herdsByRancher(rancher.id)" :key="herd.id">{{ herd.name }}</span>
-          <span v-if="!herdsByRancher(rancher.id).length">Sin fincas registradas</span>
+          <span v-for="herd in herdsByRancher(rancher.id)" :key="herd.id">{{
+            herd.name
+          }}</span>
+          <span v-if="!herdsByRancher(rancher.id).length"
+            >Sin fincas registradas</span
+          >
         </div>
 
         <footer>
@@ -144,6 +170,8 @@ const sendRequest = (rancher) => {
       </article>
     </div>
 
-    <p v-if="!filteredRanchers.length" class="empty-state">No se encontraron ganaderos con ese criterio.</p>
+    <p v-if="!filteredRanchers.length" class="empty-state">
+      No se encontraron ganaderos con ese criterio.
+    </p>
   </section>
 </template>

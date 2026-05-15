@@ -1,13 +1,13 @@
 <script setup>
-import {computed, onMounted} from "vue";
-import {useI18n} from "vue-i18n";
-import {useRouter} from "vue-router";
+import { computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import useLivestockStore from "../../../livestock/application/livestock.store.js";
 import useSanitaryStore from "../../../sanitary/application/sanitary.store.js";
 import useFinancialStore from "../../../financial/application/financial.store.js";
 import useActivitiesStore from "../../../activities/application/activities.store.js";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const router = useRouter();
 
@@ -27,19 +27,19 @@ onMounted(() => {
 });
 
 const animalSeverity = (status) => {
-  if (status === 'Saludable') return 'success';
-  return 'warn';
+  if (status === "Saludable") return "success";
+  return "warn";
 };
 
 const activitySeverity = (priority) => {
-  if (priority === 'Alta') return 'danger';
-  return 'info';
+  if (priority === "Alta") return "danger";
+  return "info";
 };
 
 const recentAnimals = computed(() => {
   const list = [];
 
-  livestock.animals.forEach(animal => {
+  livestock.animals.forEach((animal) => {
     if (list.length < 4) {
       list.push(animal);
     }
@@ -51,7 +51,7 @@ const recentAnimals = computed(() => {
 const recentActivities = computed(() => {
   const list = [];
 
-  activities.activities.forEach(activity => {
+  activities.activities.forEach((activity) => {
     if (list.length < 4) {
       list.push(activity);
     }
@@ -66,12 +66,22 @@ const recentActivities = computed(() => {
     <section class="hero-panel">
       <div>
         <span class="section-chip">Control rural</span>
-        <h2>{{ t('home.title') }}</h2>
-        <p>{{ t('home.content') }}</p>
+        <h2>{{ t("home.title") }}</h2>
+        <p>{{ t("home.content") }}</p>
       </div>
       <div class="hero-actions">
-        <pv-button :label="t('home.primaryAction')" icon="pi pi-plus" @click="router.push('/livestock/animals/new')"/>
-        <pv-button :label="t('home.secondaryAction')" icon="pi pi-chart-line" severity="secondary" outlined @click="router.push('/analytics/dashboard')"/>
+        <pv-button
+          :label="t('home.primaryAction')"
+          icon="pi pi-plus"
+          @click="router.push('/livestock/animals/new')"
+        />
+        <pv-button
+          :label="t('home.secondaryAction')"
+          icon="pi pi-chart-line"
+          severity="secondary"
+          outlined
+          @click="router.push('/analytics/dashboard')"
+        />
       </div>
     </section>
 
@@ -109,10 +119,17 @@ const recentActivities = computed(() => {
           <router-link to="/livestock/animals">Ver todos</router-link>
         </div>
         <div class="compact-list">
-          <div v-for="animal in recentAnimals" :key="animal.id" class="compact-row">
+          <div
+            v-for="animal in recentAnimals"
+            :key="animal.id"
+            class="compact-row"
+          >
             <span>{{ animal.tag }}</span>
             <strong>{{ animal.name }}</strong>
-            <pv-tag :value="animal.status" :severity="animalSeverity(animal.status)"/>
+            <pv-tag
+              :value="animal.status"
+              :severity="animalSeverity(animal.status)"
+            />
           </div>
         </div>
       </article>
@@ -123,10 +140,17 @@ const recentActivities = computed(() => {
           <router-link to="/activities/calendar">Abrir calendario</router-link>
         </div>
         <div class="compact-list">
-          <div v-for="activity in recentActivities" :key="activity.id" class="compact-row">
+          <div
+            v-for="activity in recentActivities"
+            :key="activity.id"
+            class="compact-row"
+          >
             <span>{{ activity.date }}</span>
             <strong>{{ activity.title }}</strong>
-            <pv-tag :value="activity.priority" :severity="activitySeverity(activity.priority)"/>
+            <pv-tag
+              :value="activity.priority"
+              :severity="activitySeverity(activity.priority)"
+            />
           </div>
         </div>
       </article>

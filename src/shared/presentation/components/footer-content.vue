@@ -3,14 +3,14 @@
     <div class="col-12 ml-3 align-items-center justify-content-center">
       <p>Copyright &copy; 2026. AniTec</p>
     </div>
-    <div  class="col-12 ml-3 mt-1 align-items-center justify-content-center">
+    <div class="col-12 ml-3 mt-1 align-items-center justify-content-center">
       <p>
-        Hecho con <i class="pi pi-heart"/> usando <a href="https://primevue.org/" target="_blank">PrimeVue</a> por Titan Team
+        Hecho con <i class="pi pi-heart" /> usando
+        <a href="https://primevue.org/" target="_blank">PrimeVue</a> por Titan
+        Team
       </p>
     </div>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
