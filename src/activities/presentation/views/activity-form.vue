@@ -1,12 +1,12 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
-import {useI18n} from "vue-i18n";
-import {useRoute, useRouter} from "vue-router";
-import {FarmActivity} from "../../domain/model/farm-activity.entity.js";
+import { computed, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
+import { FarmActivity } from "../../domain/model/farm-activity.entity.js";
 import useActivitiesStore from "../../application/activities.store.js";
 import useIamStore from "../../../iam/application/iam.store.js";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const route = useRoute();
 
@@ -24,24 +24,37 @@ const isEdit = computed(() => {
   return false;
 });
 
-const typeOptions = ['Sanitario', 'Visita veterinaria', 'Productivo', 'Financiero', 'Reproductivo'];
+const typeOptions = [
+  "Sanitario",
+  "Visita veterinaria",
+  "Productivo",
+  "Financiero",
+  "Reproductivo",
+];
 
-const priorityOptions = ['Alta', 'Media', 'Baja'];
+const priorityOptions = ["Alta", "Media", "Baja"];
 
-const statusOptions = ['Pendiente', 'Programado', 'Completado'];
+const statusOptions = ["Pendiente", "Programado", "Completado"];
 
 let ownerId = null;
 let veterinarianId = null;
 
-if (iam.currentRole === 'rancher') ownerId = iam.currentUserId;
-if (iam.currentRole === 'veterinarian') veterinarianId = iam.currentUserId;
+if (iam.currentRole === "rancher") ownerId = iam.currentUserId;
+if (iam.currentRole === "veterinarian") veterinarianId = iam.currentUserId;
 
-const form = ref({ownerId, veterinarianId, title: '', type: 'Sanitario', date: '', priority: 'Media', status: 'Pendiente'});
+const form = ref({
+  ownerId,
+  veterinarianId,
+  title: "",
+  type: "Sanitario",
+  date: "",
+  priority: "Media",
+  status: "Pendiente",
+});
 
 onMounted(async () => {
   if (!store.loaded) await store.fetchActivities();
   if (isEdit.value) {
-
     const activity = store.getActivityById(route.params.id);
     if (activity) {
       form.value.ownerId = activity.ownerId;
@@ -52,7 +65,7 @@ onMounted(async () => {
       form.value.priority = activity.priority;
       form.value.status = activity.status;
     } else {
-      router.push({name: 'activities-calendar'});
+      router.push({ name: "activities-calendar" });
     }
   }
 });
@@ -62,7 +75,6 @@ onMounted(async () => {
  * @returns {Promise<void>}
  */
 const save = async () => {
-
   let id = null;
   if (isEdit.value) id = route.params.id;
 
@@ -74,15 +86,16 @@ const save = async () => {
     type: form.value.type,
     date: form.value.date,
     priority: form.value.priority,
-    status: form.value.status
+    status: form.value.status,
   });
-  if (isEdit.value) await store.updateActivity(activity); else await store.addActivity(activity);
-  router.push({name: 'activities-calendar'});
+  if (isEdit.value) await store.updateActivity(activity);
+  else await store.addActivity(activity);
+  router.push({ name: "activities-calendar" });
 };
 
 const formTitle = computed(() => {
-  if (isEdit.value) return t('activities.editTitle');
-  return t('activities.newTitle');
+  if (isEdit.value) return t("activities.editTitle");
+  return t("activities.newTitle");
 });
 </script>
 
@@ -93,17 +106,43 @@ const formTitle = computed(() => {
       <div>
         <span class="section-chip">Activities BC</span>
         <h2>{{ formTitle }}</h2>
-        <p>Programa actividades, visitas, controles productivos o recordatorios importantes.</p>
+        <p>
+          Programa actividades, visitas, controles productivos o recordatorios
+          importantes.
+        </p>
       </div>
     </div>
-    <label class="full">{{ t('activities.activityTitle') }}<pv-input-text v-model="form.title" placeholder="Ej. Vacunacion del lote principal" required/></label>
-    <label>{{ t('activities.type') }}<pv-select v-model="form.type" :options="typeOptions"/></label>
-    <label>{{ t('activities.date') }}<pv-input-text v-model="form.date" type="date" required/></label>
-    <label>{{ t('activities.priority') }}<pv-select v-model="form.priority" :options="priorityOptions"/></label>
-    <label>{{ t('activities.status') }}<pv-select v-model="form.status" :options="statusOptions"/></label>
+    <label class="full"
+      >{{ t("activities.activityTitle")
+      }}<pv-input-text
+        v-model="form.title"
+        placeholder="Ej. Vacunacion del lote principal"
+        required
+    /></label>
+    <label
+      >{{ t("activities.type")
+      }}<pv-select v-model="form.type" :options="typeOptions"
+    /></label>
+    <label
+      >{{ t("activities.date")
+      }}<pv-input-text v-model="form.date" type="date" required
+    /></label>
+    <label
+      >{{ t("activities.priority")
+      }}<pv-select v-model="form.priority" :options="priorityOptions"
+    /></label>
+    <label
+      >{{ t("activities.status")
+      }}<pv-select v-model="form.status" :options="statusOptions"
+    /></label>
     <div class="form-actions friendly-actions full">
-      <pv-button :label="t('common.save')" icon="pi pi-save" type="submit"/>
-      <pv-button :label="t('common.cancel')" severity="secondary" outlined @click="router.push({name:'activities-calendar'})"/>
+      <pv-button :label="t('common.save')" icon="pi pi-save" type="submit" />
+      <pv-button
+        :label="t('common.cancel')"
+        severity="secondary"
+        outlined
+        @click="router.push({ name: 'activities-calendar' })"
+      />
     </div>
   </form>
 </template>

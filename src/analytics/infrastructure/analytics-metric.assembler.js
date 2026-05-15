@@ -1,4 +1,4 @@
-import {AnalyticsMetric} from "../domain/model/analytics-metric.entity.js";
+import { AnalyticsMetric } from "../domain/model/analytics-metric.entity.js";
 
 /**
  * Converts data received from the API into AnalyticsMetric entities.
@@ -10,7 +10,7 @@ export class AnalyticsMetricAssembler {
      * @returns {AnalyticsMetric}
      */
     static toEntityFromResource(resource) {
-        return new AnalyticsMetric({...resource});
+        return new AnalyticsMetric({ ...resource });
     }
 
     /**
@@ -21,7 +21,9 @@ export class AnalyticsMetricAssembler {
     static toEntitiesFromResponse(response) {
         if (response.status !== 200) return [];
 
-        const resources = Array.isArray(response.data) ? response.data : response.data['report-metrics'];
-        return resources.map(resource => this.toEntityFromResource(resource));
+        const resources = Array.isArray(response.data)
+            ? response.data
+            : response.data["report-metrics"];
+        return resources.map((resource) => this.toEntityFromResource(resource));
     }
 }

@@ -1,8 +1,8 @@
-import {defineStore} from "pinia";
-import {computed, ref} from "vue";
-import {LivestockApi} from "../infrastructure/livestock-api.js";
-import {AnimalAssembler} from "../infrastructure/animal.assembler.js";
-import {HerdAssembler} from "../infrastructure/herd.assembler.js";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+import { LivestockApi } from "../infrastructure/livestock-api.js";
+import { AnimalAssembler } from "../infrastructure/animal.assembler.js";
+import { HerdAssembler } from "../infrastructure/herd.assembler.js";
 import useIamStore from "../../iam/application/iam.store.js";
 
 const api = new LivestockApi();
@@ -10,8 +10,7 @@ const api = new LivestockApi();
 /**
  * Store that manages animals, farms, and livestock queries.
  */
-const useLivestockStore = defineStore('livestock', () => {
-
+const useLivestockStore = defineStore("livestock", () => {
     const iam = useIamStore();
 
     const animals = ref([]);
@@ -27,8 +26,8 @@ const useLivestockStore = defineStore('livestock', () => {
     const healthyCount = computed(() => {
         let total = 0;
 
-        animals.value.forEach(animal => {
-            if (animal.status === 'Saludable') {
+        animals.value.forEach((animal) => {
+            if (animal.status === "Saludable") {
                 total++;
             }
         });
@@ -41,10 +40,14 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {Promise}
      */
     function fetchAnimals() {
-        return api.getAnimals().then(response => {
-            animals.value = AnimalAssembler.toEntitiesFromResponse(response);
-            loaded.value = true;
-        }).catch(error => errors.value.push(error));
+        return api
+            .getAnimals()
+            .then((response) => {
+                animals.value =
+                    AnimalAssembler.toEntitiesFromResponse(response);
+                loaded.value = true;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -52,9 +55,12 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {Promise}
      */
     function fetchHerds() {
-        return api.getHerds().then(response => {
-            herds.value = HerdAssembler.toEntitiesFromResponse(response);
-        }).catch(error => errors.value.push(error));
+        return api
+            .getHerds()
+            .then((response) => {
+                herds.value = HerdAssembler.toEntitiesFromResponse(response);
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -82,7 +88,7 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {string}
      */
     function getHerdName(herdId) {
-        let herdName = 'Sin hato';
+        let herdName = "Sin hato";
 
         for (let i = 0; i < herds.value.length; i++) {
             const herd = herds.value[i];
@@ -106,7 +112,7 @@ const useLivestockStore = defineStore('livestock', () => {
         for (let i = 0; i < iam.demoUsers.length; i++) {
             const user = iam.demoUsers[i];
 
-            if (user.role === 'rancher' && Number(user.id) === Number(id)) {
+            if (user.role === "rancher" && Number(user.id) === Number(id)) {
                 selectedRancher = user;
             }
         }
@@ -122,8 +128,11 @@ const useLivestockStore = defineStore('livestock', () => {
     function getAssignedRanchers(veterinarianId = iam.currentUserId) {
         const ranchers = [];
 
-        iam.demoUsers.forEach(user => {
-            if (user.role === 'rancher' && Number(user.veterinarianId) === Number(veterinarianId)) {
+        iam.demoUsers.forEach((user) => {
+            if (
+                user.role === "rancher" &&
+                Number(user.veterinarianId) === Number(veterinarianId)
+            ) {
                 ranchers.push(user);
             }
         });
@@ -139,7 +148,7 @@ const useLivestockStore = defineStore('livestock', () => {
     function getHerdsByOwnerId(ownerId) {
         const ownerHerds = [];
 
-        herds.value.forEach(herd => {
+        herds.value.forEach((herd) => {
             if (Number(herd.ownerId) === Number(ownerId)) {
                 ownerHerds.push(herd);
             }
@@ -151,8 +160,7 @@ const useLivestockStore = defineStore('livestock', () => {
     function getHerdsByVeterinarianId(veterinarianId = iam.currentUserId) {
         const veterinarianHerds = [];
 
-        herds.value.forEach(herd => {
-
+        herds.value.forEach((herd) => {
             const owner = getRancherById(herd.ownerId);
 
             if (owner) {
@@ -172,13 +180,13 @@ const useLivestockStore = defineStore('livestock', () => {
     function getAnimalsByHerdIds(herdIds) {
         const ids = [];
 
-        herdIds.forEach(id => {
+        herdIds.forEach((id) => {
             ids.push(Number(id));
         });
 
         const selectedAnimals = [];
 
-        animals.value.forEach(animal => {
+        animals.value.forEach((animal) => {
             if (ids.includes(Number(animal.herdId))) {
                 selectedAnimals.push(animal);
             }
@@ -195,7 +203,7 @@ const useLivestockStore = defineStore('livestock', () => {
     function getAnimalsByOwnerId(ownerId) {
         const herdIds = [];
 
-        getHerdsByOwnerId(ownerId).forEach(herd => {
+        getHerdsByOwnerId(ownerId).forEach((herd) => {
             herdIds.push(herd.id);
         });
 
@@ -210,7 +218,7 @@ const useLivestockStore = defineStore('livestock', () => {
     function getAnimalsByVeterinarianId(veterinarianId = iam.currentUserId) {
         const herdIds = [];
 
-        getHerdsByVeterinarianId(veterinarianId).forEach(herd => {
+        getHerdsByVeterinarianId(veterinarianId).forEach((herd) => {
             herdIds.push(herd.id);
         });
 
@@ -234,7 +242,7 @@ const useLivestockStore = defineStore('livestock', () => {
     function getAnimalCountByHerd(herdId) {
         let total = 0;
 
-        animals.value.forEach(animal => {
+        animals.value.forEach((animal) => {
             if (Number(animal.herdId) === Number(herdId)) {
                 total++;
             }
@@ -249,8 +257,14 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {Promise}
      */
     function addAnimal(animal) {
-        return api.createAnimal(animal).then(response => animals.value.push(AnimalAssembler.toEntityFromResource(response.data)))
-            .catch(error => errors.value.push(error));
+        return api
+            .createAnimal(animal)
+            .then((response) =>
+                animals.value.push(
+                    AnimalAssembler.toEntityFromResource(response.data),
+                ),
+            )
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -259,22 +273,26 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {Promise}
      */
     function updateAnimal(animal) {
-        return api.updateAnimal(animal).then(response => {
+        return api
+            .updateAnimal(animal)
+            .then((response) => {
+                const updated = AnimalAssembler.toEntityFromResource(
+                    response.data,
+                );
 
-            const updated = AnimalAssembler.toEntityFromResource(response.data);
+                let index = -1;
 
-            let index = -1;
+                for (let i = 0; i < animals.value.length; i++) {
+                    const item = animals.value[i];
 
-            for (let i = 0; i < animals.value.length; i++) {
-                const item = animals.value[i];
-
-                if (Number(item.id) === Number(updated.id)) {
-                    index = i;
+                    if (Number(item.id) === Number(updated.id)) {
+                        index = i;
+                    }
                 }
-            }
 
-            if (index !== -1) animals.value[index] = updated;
-        }).catch(error => errors.value.push(error));
+                if (index !== -1) animals.value[index] = updated;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -283,17 +301,20 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {Promise}
      */
     function deleteAnimal(animal) {
-        return api.deleteAnimal(animal.id).then(() => {
-            const newAnimals = [];
+        return api
+            .deleteAnimal(animal.id)
+            .then(() => {
+                const newAnimals = [];
 
-            animals.value.forEach(item => {
-                if (Number(item.id) !== Number(animal.id)) {
-                    newAnimals.push(item);
-                }
-            });
+                animals.value.forEach((item) => {
+                    if (Number(item.id) !== Number(animal.id)) {
+                        newAnimals.push(item);
+                    }
+                });
 
-            animals.value = newAnimals;
-        }).catch(error => errors.value.push(error));
+                animals.value = newAnimals;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -302,8 +323,14 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {Promise}
      */
     function addHerd(herd) {
-        return api.createHerd(herd).then(response => herds.value.push(HerdAssembler.toEntityFromResource(response.data)))
-            .catch(error => errors.value.push(error));
+        return api
+            .createHerd(herd)
+            .then((response) =>
+                herds.value.push(
+                    HerdAssembler.toEntityFromResource(response.data),
+                ),
+            )
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -312,22 +339,26 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {Promise}
      */
     function updateHerd(herd) {
-        return api.updateHerd(herd).then(response => {
+        return api
+            .updateHerd(herd)
+            .then((response) => {
+                const updated = HerdAssembler.toEntityFromResource(
+                    response.data,
+                );
 
-            const updated = HerdAssembler.toEntityFromResource(response.data);
+                let index = -1;
 
-            let index = -1;
+                for (let i = 0; i < herds.value.length; i++) {
+                    const item = herds.value[i];
 
-            for (let i = 0; i < herds.value.length; i++) {
-                const item = herds.value[i];
-
-                if (Number(item.id) === Number(updated.id)) {
-                    index = i;
+                    if (Number(item.id) === Number(updated.id)) {
+                        index = i;
+                    }
                 }
-            }
 
-            if (index !== -1) herds.value[index] = updated;
-        }).catch(error => errors.value.push(error));
+                if (index !== -1) herds.value[index] = updated;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -336,20 +367,49 @@ const useLivestockStore = defineStore('livestock', () => {
      * @returns {Promise}
      */
     function deleteHerd(herd) {
-        return api.deleteHerd(herd.id).then(() => {
-            const newHerds = [];
+        return api
+            .deleteHerd(herd.id)
+            .then(() => {
+                const newHerds = [];
 
-            herds.value.forEach(item => {
-                if (Number(item.id) !== Number(herd.id)) {
-                    newHerds.push(item);
-                }
-            });
+                herds.value.forEach((item) => {
+                    if (Number(item.id) !== Number(herd.id)) {
+                        newHerds.push(item);
+                    }
+                });
 
-            herds.value = newHerds;
-        }).catch(error => errors.value.push(error));
+                herds.value = newHerds;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
-    return { animals, herds, errors, loaded, animalCount, healthyCount, fetchAnimals, fetchHerds, getAnimalById, getHerdName, getRancherById, getAssignedRanchers, getHerdsByOwnerId, getHerdsByVeterinarianId, getAnimalsByHerdIds, getAnimalsByOwnerId, getAnimalsByVeterinarianId, getHerdById, getAnimalCountByHerd, addAnimal, updateAnimal, deleteAnimal, addHerd, updateHerd, deleteHerd };
+    return {
+        animals,
+        herds,
+        errors,
+        loaded,
+        animalCount,
+        healthyCount,
+        fetchAnimals,
+        fetchHerds,
+        getAnimalById,
+        getHerdName,
+        getRancherById,
+        getAssignedRanchers,
+        getHerdsByOwnerId,
+        getHerdsByVeterinarianId,
+        getAnimalsByHerdIds,
+        getAnimalsByOwnerId,
+        getAnimalsByVeterinarianId,
+        getHerdById,
+        getAnimalCountByHerd,
+        addAnimal,
+        updateAnimal,
+        deleteAnimal,
+        addHerd,
+        updateHerd,
+        deleteHerd,
+    };
 });
 
 export default useLivestockStore;

@@ -1,0 +1,213 @@
+@startuml
+title AniTec Frontend - Diagrama de clases UML simplificado
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+
+class User {
+  +id: Number
+  +username: String
+  +password: String
+  +role: String
+  +fullName: String
+  +veterinarianId: Number
+}
+
+class Herd {
+  +id: Number
+  +name: String
+  +location: String
+  +owner: String
+  +ownerId: Number
+  +veterinarianId: Number
+  +mainType: String
+}
+
+class Animal {
+  +id: Number
+  +tag: String
+  +name: String
+  +species: String
+  +breed: String
+  +gender: String
+  +birthDate: String
+  +weight: Number
+  +status: String
+  +herdId: Number
+}
+
+class HealthEvent {
+  +id: Number
+  +animalId: Number
+  +type: String
+  +date: String
+  +description: String
+  +veterinarian: String
+  +diagnosis: String
+  +treatment: String
+  +prescription: String
+  +followUp: String
+  +nextDueDate: String
+}
+
+class FarmActivity {
+  +id: Number
+  +title: String
+  +type: String
+  +date: String
+  +priority: String
+  +status: String
+}
+
+class FinancialRecord {
+  +id: Number
+  +type: String
+  +category: String
+  +amount: Number
+  +date: String
+  +description: String
+}
+
+class IamStore {
+  +demoUsers: User[]
+  +currentUser: User
+  +errors: Error[]
+  +isSignedIn: Boolean
+  +currentRole: String
+  +signIn(credentials, router): Boolean
+  +signOut(router): void
+  +assignRancherToVeterinarian(): Boolean
+  +unassignRancherFromVeterinarian(): Boolean
+}
+
+class LivestockStore {
+  +animals: Animal[]
+  +herds: Herd[]
+  +loaded: Boolean
+  +animalCount: Number
+  +healthyCount: Number
+  +fetchAnimals(): void
+  +fetchHerds(): void
+  +getAnimalById(id): Animal
+  +getHerdName(herdId): String
+  +getAnimalsByOwnerId(ownerId): Animal[]
+  +getAnimalsByVeterinarianId(veterinarianId): Animal[]
+}
+
+class SanitaryStore {
+  +healthEvents: HealthEvent[]
+  +loaded: Boolean
+  +pendingAlerts: Number
+  +fetchHealthEvents(): void
+  +getHealthEventById(id): HealthEvent
+  +addHealthEvent(event): void
+  +updateHealthEvent(event): void
+  +deleteHealthEvent(event): void
+}
+
+class ActivitiesStore {
+  +activities: FarmActivity[]
+  +loaded: Boolean
+  +highPriorityCount: Number
+  +fetchActivities(): void
+  +getActivityById(id): FarmActivity
+  +addActivity(activity): void
+  +updateActivity(activity): void
+  +deleteActivity(activity): void
+}
+
+class FinancialStore {
+  +records: FinancialRecord[]
+  +loaded: Boolean
+  +incomeTotal: Number
+  +expenseTotal: Number
+  +balance: Number
+  +fetchRecords(): void
+  +addRecord(record): void
+  +updateRecord(record): void
+  +deleteRecord(record): void
+}
+
+class AnalyticsDashboard {
+  +analyticsMetrics
+  +visibleAnimals
+  +visibleHealthEvents
+  +animalStatusData
+  +healthEventTypeData
+  +herdSanitaryData
+}
+
+class Router {
+  +beforeEach()
+  +dashboardByRole()
+}
+
+class RancherDashboard {
+  +selectedHerdId
+  +rancherAnimals
+  +animalsAtRisk
+  +recentHealthEvents
+}
+
+class VeterinarianDashboard {
+  +selectedClientId
+  +assignedRanchers
+  +assignedAnimals
+  +pendingFollowUps
+}
+
+class VeterinaryClients {
+  +clients
+  +alertsByClient()
+  +removeClient()
+}
+
+class AnimalForm {
+  +form
+  +isEdit
+  +save()
+}
+
+class HealthForm {
+  +form
+  +animalOptions
+  +save()
+}
+
+User "1" -- "0..*" Herd : owns
+User "1" -- "0..*" User : veterinarian manages ranchers
+Herd "1" -- "0..*" Animal : contains
+Animal "1" -- "0..*" HealthEvent : has clinical records
+User "1" -- "0..*" FarmActivity : creates
+User "1" -- "0..*" FinancialRecord : registers
+
+IamStore --> User : manages session
+LivestockStore --> Herd : manages
+LivestockStore --> Animal : manages
+SanitaryStore --> HealthEvent : manages
+ActivitiesStore --> FarmActivity : manages
+FinancialStore --> FinancialRecord : manages
+
+Router --> IamStore : checks role
+RancherDashboard --> IamStore : current rancher
+RancherDashboard --> LivestockStore : animals and herds
+RancherDashboard --> SanitaryStore : health alerts
+RancherDashboard --> ActivitiesStore : upcoming activities
+RancherDashboard --> FinancialStore : balance
+
+VeterinarianDashboard --> LivestockStore : clients and animals
+VeterinarianDashboard --> SanitaryStore : clinical records
+VeterinaryClients --> IamStore : assign/remove clients
+VeterinaryClients --> LivestockStore : client herds
+VeterinaryClients --> SanitaryStore : client alerts
+
+AnimalForm --> LivestockStore : create/update animal
+HealthForm --> SanitaryStore : create/update health event
+HealthForm --> LivestockStore : animal options
+
+AnalyticsDashboard --> IamStore : current role
+AnalyticsDashboard --> LivestockStore : animals and herds
+AnalyticsDashboard --> SanitaryStore : health records
+
+@enduml

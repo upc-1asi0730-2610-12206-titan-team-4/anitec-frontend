@@ -1,15 +1,14 @@
-import {defineStore} from "pinia";
-import {computed, ref} from "vue";
-import {ActivitiesApi} from "../infrastructure/activities-api.js";
-import {FarmActivityAssembler} from "../infrastructure/farm-activity.assembler.js";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+import { ActivitiesApi } from "../infrastructure/activities-api.js";
+import { FarmActivityAssembler } from "../infrastructure/farm-activity.assembler.js";
 
 const api = new ActivitiesApi();
 
 /**
  * Store that manages calendar activities.
  */
-const useActivitiesStore = defineStore('activities', () => {
-
+const useActivitiesStore = defineStore("activities", () => {
     const activities = ref([]);
 
     const errors = ref([]);
@@ -19,8 +18,8 @@ const useActivitiesStore = defineStore('activities', () => {
     const highPriorityCount = computed(() => {
         let total = 0;
 
-        activities.value.forEach(activity => {
-            if (activity.priority === 'Alta') {
+        activities.value.forEach((activity) => {
+            if (activity.priority === "Alta") {
                 total++;
             }
         });
@@ -33,10 +32,14 @@ const useActivitiesStore = defineStore('activities', () => {
      * @returns {Promise}
      */
     function fetchActivities() {
-        return api.getActivities().then(response => {
-            activities.value = FarmActivityAssembler.toEntitiesFromResponse(response);
-            loaded.value = true;
-        }).catch(error => errors.value.push(error));
+        return api
+            .getActivities()
+            .then((response) => {
+                activities.value =
+                    FarmActivityAssembler.toEntitiesFromResponse(response);
+                loaded.value = true;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -64,8 +67,14 @@ const useActivitiesStore = defineStore('activities', () => {
      * @returns {Promise}
      */
     function addActivity(activity) {
-        return api.createActivity(activity).then(response => activities.value.push(FarmActivityAssembler.toEntityFromResource(response.data)))
-            .catch(error => errors.value.push(error));
+        return api
+            .createActivity(activity)
+            .then((response) =>
+                activities.value.push(
+                    FarmActivityAssembler.toEntityFromResource(response.data),
+                ),
+            )
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -74,22 +83,26 @@ const useActivitiesStore = defineStore('activities', () => {
      * @returns {Promise}
      */
     function updateActivity(activity) {
-        return api.updateActivity(activity).then(response => {
+        return api
+            .updateActivity(activity)
+            .then((response) => {
+                const updated = FarmActivityAssembler.toEntityFromResource(
+                    response.data,
+                );
 
-            const updated = FarmActivityAssembler.toEntityFromResource(response.data);
+                let index = -1;
 
-            let index = -1;
+                for (let i = 0; i < activities.value.length; i++) {
+                    const item = activities.value[i];
 
-            for (let i = 0; i < activities.value.length; i++) {
-                const item = activities.value[i];
-
-                if (Number(item.id) === Number(updated.id)) {
-                    index = i;
+                    if (Number(item.id) === Number(updated.id)) {
+                        index = i;
+                    }
                 }
-            }
 
-            if (index !== -1) activities.value[index] = updated;
-        }).catch(error => errors.value.push(error));
+                if (index !== -1) activities.value[index] = updated;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
     /**
@@ -98,20 +111,33 @@ const useActivitiesStore = defineStore('activities', () => {
      * @returns {Promise}
      */
     function deleteActivity(activity) {
-        return api.deleteActivity(activity.id).then(() => {
-            const newActivities = [];
+        return api
+            .deleteActivity(activity.id)
+            .then(() => {
+                const newActivities = [];
 
-            activities.value.forEach(item => {
-                if (Number(item.id) !== Number(activity.id)) {
-                    newActivities.push(item);
-                }
-            });
+                activities.value.forEach((item) => {
+                    if (Number(item.id) !== Number(activity.id)) {
+                        newActivities.push(item);
+                    }
+                });
 
-            activities.value = newActivities;
-        }).catch(error => errors.value.push(error));
+                activities.value = newActivities;
+            })
+            .catch((error) => errors.value.push(error));
     }
 
-    return { activities, errors, loaded, highPriorityCount, fetchActivities, getActivityById, addActivity, updateActivity, deleteActivity };
+    return {
+        activities,
+        errors,
+        loaded,
+        highPriorityCount,
+        fetchActivities,
+        getActivityById,
+        addActivity,
+        updateActivity,
+        deleteActivity,
+    };
 });
 
 export default useActivitiesStore;

@@ -1,4 +1,4 @@
-import {FinancialRecord} from "../domain/model/financial-record.entity.js";
+import { FinancialRecord } from "../domain/model/financial-record.entity.js";
 
 /**
  * Converts data received from the API into FinancialRecord entities.
@@ -10,7 +10,7 @@ export class FinancialRecordAssembler {
      * @returns {FinancialRecord}
      */
     static toEntityFromResource(resource) {
-        return new FinancialRecord({...resource});
+        return new FinancialRecord({ ...resource });
     }
 
     /**
@@ -21,7 +21,9 @@ export class FinancialRecordAssembler {
     static toEntitiesFromResponse(response) {
         if (response.status !== 200) return [];
 
-        const resources = Array.isArray(response.data) ? response.data : response.data['financial-records'];
-        return resources.map(resource => this.toEntityFromResource(resource));
+        const resources = Array.isArray(response.data)
+            ? response.data
+            : response.data["financial-records"];
+        return resources.map((resource) => this.toEntityFromResource(resource));
     }
 }
