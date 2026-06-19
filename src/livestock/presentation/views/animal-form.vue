@@ -109,9 +109,11 @@ const save = async () => {
     status: form.value.status,
     herdId: form.value.herdId,
   });
-  if (isEdit.value) await store.updateAnimal(animal);
-  else await store.addAnimal(animal);
-  router.push({ name: "livestock-animals" });
+  const saved = isEdit.value
+    ? await store.updateAnimal(animal)
+    : await store.addAnimal(animal);
+
+  if (saved) router.push({ name: "livestock-animals" });
 };
 
 const formTitle = computed(() => {
@@ -127,24 +129,21 @@ const formTitle = computed(() => {
       <div>
         <span class="section-chip">Livestock BC</span>
         <h2>{{ formTitle }}</h2>
-        <p>
-          Completa la ficha basica para identificar al animal dentro de su finca
-          o hato.
-        </p>
+        <p>{{ t("animals.formSubtitle") }}</p>
       </div>
     </div>
     <label
       >{{ t("animals.tag")
       }}<pv-input-text
         v-model="form.tag"
-        placeholder="Ej. BOV-2026-034"
+        :placeholder="t('animals.tagPlaceholder')"
         required
     /></label>
     <label
       >{{ t("animals.name")
       }}<pv-input-text
         v-model="form.name"
-        placeholder="Nombre o identificador corto"
+        :placeholder="t('animals.namePlaceholder')"
         required
     /></label>
     <label
@@ -159,7 +158,7 @@ const formTitle = computed(() => {
       >{{ t("animals.breed")
       }}<pv-input-text
         v-model="form.breed"
-        placeholder="Ej. Holstein, Pekin, Hampshire"
+        :placeholder="t('animals.breedPlaceholder')"
         required
     /></label>
     <label
@@ -184,7 +183,11 @@ const formTitle = computed(() => {
         :options="herdOptions"
         option-label="name"
         option-value="id"
+        required
     /></label>
+    <p v-if="store.errors.length" class="error-text full">
+      {{ t("animals.saveError") }}
+    </p>
     <div class="form-actions friendly-actions full">
       <pv-button :label="t('common.save')" icon="pi pi-save" type="submit" />
       <pv-button

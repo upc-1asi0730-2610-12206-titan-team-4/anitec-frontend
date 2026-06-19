@@ -85,9 +85,11 @@ const save = async () => {
     veterinarianId: form.value.veterinarianId,
     mainType: form.value.mainType,
   });
-  if (isEdit.value) await store.updateHerd(herd);
-  else await store.addHerd(herd);
-  router.push({ name: "livestock-herds" });
+  const saved = isEdit.value
+    ? await store.updateHerd(herd)
+    : await store.addHerd(herd);
+
+  if (saved) router.push({ name: "livestock-herds" });
 };
 
 const formTitle = computed(() => {
@@ -103,24 +105,21 @@ const formTitle = computed(() => {
       <div>
         <span class="section-chip">Livestock BC</span>
         <h2>{{ formTitle }}</h2>
-        <p>
-          Registra la finca para separar animales, actividades sanitarias y
-          analiticas por ubicacion.
-        </p>
+        <p>{{ t("herds.formSubtitle") }}</p>
       </div>
     </div>
     <label
       >{{ t("herds.name")
       }}<pv-input-text
         v-model="form.name"
-        placeholder="Ej. Finca Santa Rosa"
+        :placeholder="t('herds.namePlaceholder')"
         required
     /></label>
     <label
       >{{ t("herds.location")
       }}<pv-input-text
         v-model="form.location"
-        placeholder="Distrito, provincia o referencia"
+        :placeholder="t('herds.locationPlaceholder')"
         required
     /></label>
     <label
@@ -135,9 +134,12 @@ const formTitle = computed(() => {
       >{{ t("herds.owner")
       }}<pv-input-text
         v-model="form.owner"
-        placeholder="Responsable principal"
+        :placeholder="t('herds.ownerPlaceholder')"
         required
     /></label>
+    <p v-if="store.errors.length" class="error-text full">
+      {{ t("herds.saveError") }}
+    </p>
     <div class="form-actions friendly-actions full">
       <pv-button :label="t('common.save')" icon="pi pi-save" type="submit" />
       <pv-button
