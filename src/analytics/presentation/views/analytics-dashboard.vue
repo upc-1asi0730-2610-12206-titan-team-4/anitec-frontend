@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 import useSanitaryStore from "../../../sanitary/application/sanitary.store.js";
 import useLivestockStore from "../../../livestock/application/livestock.store.js";
 import useIamStore from "../../../iam/application/iam.store.js";
+import useAnalyticsStore from "../../application/analytics.store.js";
 
 const { t } = useI18n();
 
@@ -13,7 +14,10 @@ const livestock = useLivestockStore();
 
 const iam = useIamStore();
 
+const analytics = useAnalyticsStore();
+
 onMounted(() => {
+  analytics.fetchDashboard(iam.currentRole, iam.currentUserId);
   if (!sanitary.loaded) sanitary.fetchHealthEvents();
   if (!livestock.loaded) livestock.fetchAnimals();
   if (!livestock.herds.length) livestock.fetchHerds();
@@ -278,25 +282,27 @@ const otherHealthEvents = computed(() => {
  * Builds the main analytics cards based on the user role.
  */
 const analyticsMetrics = computed(() => {
+  const backend = analytics.dashboard;
+
   if (iam.currentRole === "veterinarian") {
     return [
       {
         id: "clients",
         label: "Clientes asignados",
-        value: assignedRanchers.value.length,
-        trend: `${visibleHerds.value.length} fincas bajo seguimiento`,
+        value: backend?.clients ?? assignedRanchers.value.length,
+        trend: `${backend?.herds ?? visibleHerds.value.length} fincas bajo seguimiento`,
       },
       {
         id: "patients",
         label: "Pacientes monitoreados",
-        value: visibleAnimals.value.length,
-        trend: `${activePatients.value.length} requieren atencion`,
+        value: backend?.patients ?? visibleAnimals.value.length,
+        trend: `${backend?.activePatients ?? activePatients.value.length} requieren atencion`,
       },
       {
         id: "records",
         label: "Registros sanitarios",
-        value: visibleHealthEvents.value.length,
-        trend: `${pendingHealthEvents.value.length} seguimientos pendientes`,
+        value: backend?.healthEvents ?? visibleHealthEvents.value.length,
+        trend: `${backend?.pendingFollowUps ?? pendingHealthEvents.value.length} seguimientos pendientes`,
       },
     ];
   }
@@ -305,20 +311,20 @@ const analyticsMetrics = computed(() => {
     {
       id: "animals",
       label: "Animales registrados",
-      value: visibleAnimals.value.length,
-      trend: `${visibleHerds.value.length} fincas activas`,
+      value: backend?.animals ?? visibleAnimals.value.length,
+      trend: `${backend?.herds ?? visibleHerds.value.length} fincas activas`,
     },
     {
       id: "alerts",
       label: "Alertas sanitarias",
-      value: pendingHealthEvents.value.length,
-      trend: `${activePatients.value.length} animales en observacion`,
+      value: backend?.healthEvents ?? pendingHealthEvents.value.length,
+      trend: `${backend?.healthyAnimals ?? healthyAnimals.value.length} saludables`,
     },
     {
       id: "records",
       label: "Registros sanitarios",
-      value: visibleHealthEvents.value.length,
-      trend: "Historial del hato",
+      value: backend?.healthEvents ?? visibleHealthEvents.value.length,
+      trend: `Balance S/ ${Number(backend?.balance ?? 0).toFixed(2)}`,
     },
   ];
 });

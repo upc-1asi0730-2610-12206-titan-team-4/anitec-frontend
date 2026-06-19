@@ -78,9 +78,11 @@ const save = async () => {
     date: form.value.date,
     description: form.value.description,
   });
-  if (isEdit.value) await store.updateRecord(record);
-  else await store.addRecord(record);
-  router.push({ name: "financial-records" });
+  const saved = isEdit.value
+    ? await store.updateRecord(record)
+    : await store.addRecord(record);
+
+  if (saved) router.push({ name: "financial-records" });
 };
 
 const formTitle = computed(() => {
@@ -96,10 +98,7 @@ const formTitle = computed(() => {
       <div>
         <span class="section-chip">Financial BC</span>
         <h2>{{ formTitle }}</h2>
-        <p>
-          Registra ingresos o egresos para mantener el balance de la produccion
-          actualizado.
-        </p>
+        <p>{{ t("finance.formSubtitle") }}</p>
       </div>
     </div>
     <label
@@ -132,8 +131,11 @@ const formTitle = computed(() => {
       }}<pv-textarea
         v-model="form.description"
         rows="4"
-        placeholder="Detalle del movimiento, comprobante o motivo"
+        :placeholder="t('finance.descriptionPlaceholder')"
     /></label>
+    <p v-if="store.errors.length" class="error-text full">
+      {{ t("finance.saveError") }}
+    </p>
     <div class="form-actions friendly-actions full">
       <pv-button :label="t('common.save')" icon="pi pi-save" type="submit" />
       <pv-button

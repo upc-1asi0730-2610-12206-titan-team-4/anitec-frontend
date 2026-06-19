@@ -35,6 +35,6 @@ export class HealthEvent {
         this.treatment = treatment;
         this.prescription = prescription;
         this.followUp = followUp;
-        this.nextDueDate = nextDueDate;
+        this.nextDueDate = nextDueDate || null;
     }
 }

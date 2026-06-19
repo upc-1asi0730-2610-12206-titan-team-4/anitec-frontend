@@ -83,14 +83,19 @@ const useFinancialStore = defineStore("financial", () => {
     function addRecord(record) {
         return api
             .createRecord(record)
-            .then((response) =>
+            .then((response) => {
                 records.value.push(
                     FinancialRecordAssembler.toEntityFromResource(
                         response.data,
                     ),
-                ),
-            )
-            .catch((error) => errors.value.push(error));
+                );
+                errors.value = [];
+                return true;
+            })
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**
@@ -117,8 +122,13 @@ const useFinancialStore = defineStore("financial", () => {
                 }
 
                 if (index !== -1) records.value[index] = updated;
+                errors.value = [];
+                return true;
             })
-            .catch((error) => errors.value.push(error));
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**

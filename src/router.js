@@ -28,6 +28,14 @@ const veterinaryPatients = () =>
 const animalClinicalHistory = () =>
     import("./shared/presentation/views/animal-clinical-history.vue");
 
+const iotDashboard = () =>
+    import("./devices/presentation/views/iot-dashboard.vue");
+
+const deviceForm = () => import("./devices/presentation/views/device-form.vue");
+
+const subscriptionPlans = () =>
+    import("./subscriptions/presentation/views/subscription-plans.vue");
+
 const pageNotFound = () =>
     import("./shared/presentation/views/page-not-found.vue");
 
@@ -99,6 +107,46 @@ const routes = [
         name: "analytics",
         children: analyticsRoutes,
         meta: { roles: ["rancher", "veterinarian"] },
+    },
+    {
+        path: "/iot",
+        name: "iot-dashboard",
+        component: iotDashboard,
+        meta: {
+            title: "Dispositivos IoT",
+            titleKey: "iot.title",
+            roles: ["rancher", "veterinarian"],
+        },
+    },
+    {
+        path: "/iot/new",
+        name: "iot-device-new",
+        component: deviceForm,
+        meta: {
+            title: "Nuevo dispositivo IoT",
+            titleKey: "iot.newTitle",
+            roles: ["rancher"],
+        },
+    },
+    {
+        path: "/iot/:id/edit",
+        name: "iot-device-edit",
+        component: deviceForm,
+        meta: {
+            title: "Editar dispositivo IoT",
+            titleKey: "iot.editTitle",
+            roles: ["rancher"],
+        },
+    },
+    {
+        path: "/subscriptions",
+        name: "subscription-plans",
+        component: subscriptionPlans,
+        meta: {
+            title: "Planes y pagos",
+            titleKey: "subscriptions.title",
+            roles: ["rancher", "veterinarian"],
+        },
     },
     {
         path: "/about",

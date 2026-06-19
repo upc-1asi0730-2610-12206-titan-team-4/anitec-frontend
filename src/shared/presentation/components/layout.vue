@@ -38,6 +38,8 @@ const rancherItems = [
     to: "/analytics/dashboard",
     icon: "pi pi-chart-line",
   },
+  { label: "option.iot", to: "/iot", icon: "pi pi-wifi" },
+  { label: "option.subscriptions", to: "/subscriptions", icon: "pi pi-credit-card" },
 ];
 
 const veterinarianItems = [
@@ -67,6 +69,8 @@ const veterinarianItems = [
     to: "/analytics/dashboard",
     icon: "pi pi-chart-line",
   },
+  { label: "option.iot", to: "/iot", icon: "pi pi-wifi" },
+  { label: "option.subscriptions", to: "/subscriptions", icon: "pi pi-credit-card" },
 ];
 
 const navItems = computed(() => {
@@ -76,6 +80,10 @@ const navItems = computed(() => {
 });
 
 const activeTitle = computed(() => {
+  if (route.meta.titleKey) {
+    return t(route.meta.titleKey);
+  }
+
   if (route.meta.title) {
     return route.meta.title;
   }
@@ -101,16 +109,24 @@ const homePath = computed(() => {
   if (iamStore.currentRole === "veterinarian") return "/veterinarian/dashboard";
   return "/rancher/dashboard";
 });
+
+const shellClass = computed(() => {
+  if (iamStore.currentRole === "veterinarian") return "veterinarian-shell";
+  if (iamStore.currentRole === "rancher") return "rancher-shell";
+  return "";
+});
 </script>
 
 <template>
   <pv-toast />
   <pv-confirm-dialog />
   <router-view v-if="!showShell" />
-  <div v-else class="app-shell">
+  <div v-else :class="['app-shell', shellClass]">
     <aside class="sidebar">
       <router-link :to="homePath" class="brand">
-        <span class="brand-mark">A</span>
+        <span class="brand-mark">
+          <img src="/AniTecLogo.png" alt="AniTec" />
+        </span>
         <span>
           <strong>{{ t("app.name") }}</strong>
           <small>{{ t("app.tagline") }}</small>

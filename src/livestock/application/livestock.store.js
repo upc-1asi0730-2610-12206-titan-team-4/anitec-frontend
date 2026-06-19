@@ -102,7 +102,7 @@ const useLivestockStore = defineStore("livestock", () => {
     }
 
     /**
-     * Finds a rancher inside the demo users.
+     * Finds a rancher inside the cached users.
      * @param {number|string} id User identifier.
      * @returns {Object|null}
      */
@@ -259,12 +259,17 @@ const useLivestockStore = defineStore("livestock", () => {
     function addAnimal(animal) {
         return api
             .createAnimal(animal)
-            .then((response) =>
+            .then((response) => {
                 animals.value.push(
                     AnimalAssembler.toEntityFromResource(response.data),
-                ),
-            )
-            .catch((error) => errors.value.push(error));
+                );
+                errors.value = [];
+                return true;
+            })
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**
@@ -291,8 +296,13 @@ const useLivestockStore = defineStore("livestock", () => {
                 }
 
                 if (index !== -1) animals.value[index] = updated;
+                errors.value = [];
+                return true;
             })
-            .catch((error) => errors.value.push(error));
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**
@@ -325,12 +335,17 @@ const useLivestockStore = defineStore("livestock", () => {
     function addHerd(herd) {
         return api
             .createHerd(herd)
-            .then((response) =>
+            .then((response) => {
                 herds.value.push(
                     HerdAssembler.toEntityFromResource(response.data),
-                ),
-            )
-            .catch((error) => errors.value.push(error));
+                );
+                errors.value = [];
+                return true;
+            })
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**
@@ -357,8 +372,13 @@ const useLivestockStore = defineStore("livestock", () => {
                 }
 
                 if (index !== -1) herds.value[index] = updated;
+                errors.value = [];
+                return true;
             })
-            .catch((error) => errors.value.push(error));
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**

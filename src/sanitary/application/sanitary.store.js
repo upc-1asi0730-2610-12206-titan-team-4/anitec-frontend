@@ -69,12 +69,17 @@ const useSanitaryStore = defineStore("sanitary", () => {
     function addHealthEvent(event) {
         return api
             .createHealthEvent(event)
-            .then((response) =>
+            .then((response) => {
                 healthEvents.value.push(
                     HealthEventAssembler.toEntityFromResource(response.data),
-                ),
-            )
-            .catch((error) => errors.value.push(error));
+                );
+                errors.value = [];
+                return true;
+            })
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**
@@ -101,8 +106,13 @@ const useSanitaryStore = defineStore("sanitary", () => {
                 }
 
                 if (index !== -1) healthEvents.value[index] = updated;
+                errors.value = [];
+                return true;
             })
-            .catch((error) => errors.value.push(error));
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**

@@ -1,6 +1,6 @@
 # AniTec Web App
 
-Frontend Vue 3 + Vite para la aplicación web de AniTec, construido a partir del modelo `learning-center-master` y organizado por bounded contexts con capas `domain`, `application`, `infrastructure` y `presentation`.
+Frontend Vue 3 + Vite para la aplicacion web de AniTec. La aplicacion esta organizada por bounded contexts y consume el backend real `anitec-platform-main`, desarrollado con .NET y MySQL.
 
 ## Stack
 
@@ -10,310 +10,159 @@ Frontend Vue 3 + Vite para la aplicación web de AniTec, construido a partir del
 - Vue I18n
 - PrimeVue, PrimeFlex y PrimeIcons
 - Axios
-- JSON Server para datos mock
+- Chart.js mediante el componente Chart de PrimeVue
+- Backend AniTec Platform en .NET + MySQL
 
-## Tecnologías aplicadas
+## Flujo De Ejecucion
 
-### Vue.js
+Primero iniciar MySQL local y luego levantar el backend:
 
-**Donde se aplica:**  
-Vue se utiliza en toda la capa de presentación del proyecto, principalmente en los archivos `.vue` ubicados dentro de cada bounded context:
+```powershell
+cd C:\Users\melga\AnitecProyecto\anitec-platform-main
+dotnet run --project Anitec.Platform
+```
 
-- `src/shared/presentation/views/`
-- `src/livestock/presentation/views/`
-- `src/sanitary/presentation/views/`
-- `src/financial/presentation/views/`
-- `src/activities/presentation/views/`
-- `src/analytics/presentation/views/`
+El backend queda disponible en:
 
-**Por que se aplica:**  
-Se usa Vue porque permite construir interfaces web reactivas y organizadas mediante componentes. Para AniTec esto es util porque la aplicación necesita pantallas dinámicas, como tablas de animales, formularios, dashboard de analíticas y actividades que cambian según los datos.
+```text
+http://localhost:5191/api/v1
+http://localhost:5191/swagger
+```
 
-**Como funciona:**  
-Vue conecta el estado de la aplicación con la interfaz. Por ejemplo, cuando el store de animales carga la lista desde la API mock, la tabla de animales se actualiza automáticamente. Las vistas usan `script setup` para definir lógica y `template` para renderizar la interfaz.
+Luego iniciar el frontend:
 
-### Vite
+```powershell
+cd C:\Users\melga\AnitecProyecto\anitec-frontend
+npm install
+npm run dev
+```
 
-**Donde se aplica:**  
-Vite esta configurado en:
+Para validar produccion:
 
-- `vite.config.js`
-- `package.json`
+```powershell
+npm run build
+```
 
-**Por que se aplica:**  
-Se usa como herramienta de desarrollo y construcción del proyecto. Permite levantar la aplicación rápidamente durante el desarrollo y generar una version optimizada para producción.
+## Usuarios De Prueba
 
-**Como funciona:**  
-Durante el desarrollo, el comando `npm run dev` inicia un servidor local con recarga automática. Para validar la aplicación antes de entregarla se usa `npm run build`, que genera los archivos finales en la carpeta `dist/`.
+Todos usan la contrasena `anitec123`.
 
-### PrimeVue
-
-**Donde se aplica:**  
-PrimeVue se registra en:
-
-- `src/main.js`
-
-Y se usa en las vistas mediante componentes con prefijo `pv-`, por ejemplo:
-
-- `pv-button`
-- `pv-data-table`
-- `pv-column`
-- `pv-select`
-- `pv-input-text`
-- `pv-input-number`
-- `pv-textarea`
-- `pv-tag`
-- `pv-drawer`
-- `pv-toast`
-- `pv-confirm-dialog`
-
-**Por que se aplica:**  
-Se usa PrimeVue porque ofrece componentes ya preparados para aplicaciones empresariales. AniTec necesita tablas, formularios, botones, confirmaciones y controles de entrada consistentes, por lo que PrimeVue acelera el desarrollo y mantiene una interfaz uniforme.
-
-**Como funciona:**  
-Los componentes se registran globalmente en `src/main.js`. Luego pueden usarse directamente en las vistas. Por ejemplo, el listado de animales usa `pv-data-table` para mostrar registros, paginar datos y organizar columnas.
-
-### PrimeFlex
-
-**Donde se aplica:**  
-PrimeFlex se importa en:
-
-- `src/main.js`
-
-También se usa en algunas clases utilitarias dentro de componentes heredados del proyecto base.
-
-**Por que se aplica:**  
-Se usa para contar con utilidades CSS de layout, espaciado y alineación compatibles con PrimeVue. Ayuda a construir interfaces responsivas sin escribir CSS repetitivo para cada caso simple.
-
-**Como funciona:**  
-PrimeFlex proporciona clases CSS listas para usar. Por ejemplo, clases como `grid`, `col-12`, `mt-4`, `p-2` permiten controlar distribución, márgenes y espaciado.
-
-### PrimeIcons
-
-**Donde se aplica:**  
-PrimeIcons se importa en:
-
-- `src/main.js`
-
-Y se usa en componentes y vistas mediante clases como:
-
-- `pi pi-home`
-- `pi pi-id-card`
-- `pi pi-heart`
-- `pi pi-wallet`
-- `pi pi-calendar`
-- `pi pi-chart-line`
-
-**Por que se aplica:**  
-Se usa para representar acciones y módulos de forma visual. En AniTec ayuda a que la navegación y los botones sean mas fáciles de reconocer.
-
-**Como funciona:**  
-PrimeIcons funciona mediante clases CSS. Al colocar una clase `pi pi-*` en una etiqueta `i`, se renderiza el icono correspondiente.
-
-### @primeuix/themes
-
-**Donde se aplica:**  
-El tema se configura en:
-
-- `src/main.js`
-
-Actualmente se usa el preset `Material`.
-
-**Por que se aplica:**  
-PrimeVue necesita un sistema de tema para definir la apariencia base de sus componentes. El tema permite que botones, tablas, inputs y diálogos tengan estilos consistentes.
-
-**Como funciona:**  
-Al inicializar PrimeVue se pasa la configuración del tema. Luego todos los componentes PrimeVue adoptan esa apariencia base, mientras que los estilos propios de AniTec se definen en `src/style.css`.
-
-### Vue Router
-
-**Donde se aplica:**  
-Vue Router se configura en:
-
-- `src/router.js`
-
-Y cada contexto define sus rutas en archivos como:
-
-- `src/livestock/presentation/livestock-routes.js`
-- `src/sanitary/presentation/sanitary-routes.js`
-- `src/financial/presentation/financial-routes.js`
-- `src/activities/presentation/activities-routes.js`
-- `src/analytics/presentation/analytics-routes.js`
-
-**Por que se aplica:**  
-Se usa para manejar la navegación interna de la aplicación sin recargar la pagina. AniTec necesita moverse entre dashboard, animales, sanidad, finanzas, actividades y analíticas.
-
-**Como funciona:**  
-Cada ruta asocia una URL con una vista Vue. Por ejemplo, `/livestock/animals` carga el listado de animales. El componente `router-view` ubicado en el layout muestra la vista correspondiente según la ruta actual.
-
-### Pinia
-
-**Donde se aplica:**  
-Pinia se configura en:
-
-- `src/pinia.js`
-- `src/main.js`
-
-Y se usa en los stores de cada bounded context:
-
-- `src/livestock/application/livestock.store.js`
-- `src/sanitary/application/sanitary.store.js`
-- `src/financial/application/financial.store.js`
-- `src/activities/application/activities.store.js`
-- `src/analytics/application/analytics.store.js`
-
-**Por que se aplica:**  
-Se usa para centralizar el estado y los casos de uso de cada modulo. Esto evita que las vistas llamen directamente a la API y mantiene la arquitectura ordenada.
-
-**Como funciona:**  
-Cada store contiene datos reactivos, funciones para cargar información, crear registros, editar registros y eliminarlos. Por ejemplo, `livestock.store.js` administra la lista de animales y expone acciones como `fetchAnimals`, `addAnimal`, `updateAnimal` y `deleteAnimal`.
-
-### Vue I18n
-
-**Donde se aplica:**  
-Vue I18n se configura en:
-
-- `src/i18n.js`
-
-Los textos se almacenan en:
-
-- `src/locales/es.json`
-- `src/locales/en.json`
-
-El cambio de idioma se maneja desde:
-
-- `src/shared/presentation/components/language-switcher.vue`
-
-**Por que se aplica:**  
-Se usa para que la aplicación pueda manejar textos en mas de un idioma. Aunque AniTec esta orientado principalmente al contexto latinoamericano, el soporte multilenguaje permite mantener compatibilidad con usuarios o entregables en ingles y espanol.
-
-**Como funciona:**  
-Las vistas llaman a la función `t()` para obtener textos traducidos. Por ejemplo, `t('animals.title')` muestra "Animales" en espanol o "Animals" en ingles según el idioma activo.
-
-### Axios
-
-**Donde se aplica:**  
-Axios se utiliza en:
-
-- `src/shared/infrastructure/base-api.js`
-
-Y es consumido por las APIs de cada contexto:
-
-- `livestock-api.js`
-- `sanitary-api.js`
-- `financial-api.js`
-- `activities-api.js`
-- `analytics-api.js`
-
-**Por que se aplica:**  
-Se usa para realizar peticiones HTTP hacia el backend o, por ahora, hacia la API mock. AniTec necesita obtener, crear, actualizar y eliminar información desde una fuente de datos.
-
-**Como funciona:**  
-`base-api.js` crea una instancia central de Axios con la URL base definida en variables de entorno. Luego cada contexto usa endpoints específicos para consultar sus datos. Por ejemplo, el contexto `livestock` llama a `/animals` y `/herds`.
-
-### JSON Server
-
-**Donde se aplica:**  
-JSON Server se configura mediante:
-
-- `server/db.json`
-- `server/routes.json`
-- script `npm run server` en `package.json`
-
-**Por que se aplica:**  
-Se usa como backend simulado mientras no existe un backend real conectado. Permite probar el frontend con datos persistentes y endpoints REST.
-
-**Como funciona:**  
-JSON Server lee el archivo `server/db.json` y genera automáticamente endpoints REST. Por ejemplo:
-
-- `/api/v1/animals`
-- `/api/v1/health-events`
-- `/api/v1/financial-records`
-- `/api/v1/farm-events`
-- `/api/v1/report-metrics`
-
-Con esto, las vistas pueden listar, crear, editar y eliminar registros sin depender todavía del backend final en .NET.
-
-### Node.js y npm
-
-**Donde se aplica:**  
-Node.js y npm se usan como entorno de desarrollo para instalar dependencias y ejecutar scripts del proyecto.
-
-**Por que se aplica:**  
-Son necesarios para trabajar con Vite, Vue, PrimeVue y las demás librerías del frontend.
-
-**Como funciona:**  
-`npm install` descarga las dependencias definidas en `package.json`. Luego los scripts permiten ejecutar tareas:
-
-- `npm run dev`: levanta el frontend.
-- `npm run server`: levanta la API mock.
-- `npm run build`: genera la version de producción.
-
-## Tecnologías consideradas pero no usadas aun
-
-### NewsAPI
-
-NewsAPI no se usa actualmente en el frontend. Podría utilizarse en el futuro si AniTec incorpora una sección de noticias agropecuarias, alertas del sector ganadero o novedades sanitarias externas.
-
-### Logo.dev
-
-Logo.dev no se usa actualmente. Podría utilizarse en el futuro si se necesita obtener logos de empresas, aliados, laboratorios veterinarios o instituciones de forma automática.
+| Rol | Usuario | Dashboard |
+| --- | --- | --- |
+| Ganadero | `ganadero` | `/rancher/dashboard` |
+| Ganadero | `maria` | `/rancher/dashboard` |
+| Ganadero | `jose` | `/rancher/dashboard` |
+| Ganadero | `rosa` | `/rancher/dashboard` |
+| Veterinario | `veterinaria` | `/veterinarian/dashboard` |
+| Veterinario | `vetpedro` | `/veterinarian/dashboard` |
+| Veterinario | `vetlucia` | `/veterinarian/dashboard` |
 
 ## Estructura
 
 ```text
 src/
-  iam/          # login, registro, sesión y roles
-  livestock/    # animales, hatos, razas e historial general
-  sanitary/     # vacunas, tratamientos y visitas medicas
+  iam/          # login, sesion, roles y clientes veterinarios
+  livestock/    # fincas, animales, especies, razas e historial general
+  sanitary/     # vacunas, tratamientos, diagnosticos y visitas medicas
   financial/    # ingresos, egresos y rentabilidad
   activities/   # calendario, actividades y recordatorios
-  analytics/    # dashboard, estadísticas y analíticas
-  shared/       # layout, API base y componentes comunes
+  analytics/    # dashboard, estadisticas y analiticas
+  shared/       # layout, API base, IoT, pagos y componentes comunes
 ```
 
-## Ejecutar
+## Tecnologias Aplicadas
 
-```bash
-npm install
-cd server
-sh start.sh
-cd ..
-npm run dev
-```
+### Vue.js
 
-La API mock queda configurada en:
+Se usa en toda la capa de presentacion mediante archivos `.vue`. Sirve para construir pantallas reactivas como dashboards, formularios, listados de animales, reportes, IoT y pagos. Vue conecta el estado de los stores con la interfaz: cuando llegan datos del backend, las vistas se actualizan automaticamente.
 
-```text
-http://localhost:3000/api/v1
-```
+### Vite
 
-## Rutas principales
+Esta configurado en `vite.config.js` y `package.json`. Sirve para ejecutar el entorno de desarrollo con `npm run dev` y generar el build final con `npm run build`. Vite compila el frontend y entrega recarga rapida durante desarrollo.
+
+### PrimeVue
+
+Se registra en `src/main.js` y se usa con componentes `pv-*`, como `pv-button`, `pv-input-text`, `pv-select`, `pv-chart`, `pv-tag`, `pv-toast` y `pv-confirm-dialog`. Sirve para construir interfaces de aplicacion empresarial con componentes listos, consistentes y reutilizables.
+
+### PrimeFlex
+
+Se importa en `src/main.js`. Sirve como sistema de utilidades CSS para layout, espaciado y alineacion. En AniTec complementa los estilos propios definidos en `src/style.css`.
+
+### PrimeIcons
+
+Se importa en `src/main.js` y se usa con clases como `pi pi-heart`, `pi pi-wallet`, `pi pi-calendar`, `pi pi-chart-line`, `pi pi-wifi` y `pi pi-credit-card`. Sirve para reforzar visualmente modulos y acciones.
+
+### @primeuix/themes
+
+Se configura en `src/main.js`. Sirve para dar estilo base a los componentes PrimeVue. Los colores, paneles y tarjetas propias de AniTec se terminan de definir en `src/style.css`.
+
+### Vue Router
+
+Se configura en `src/router.js` y en los archivos de rutas de cada bounded context. Sirve para navegar sin recargar la pagina y proteger rutas por rol. El frontend normaliza los roles del backend `Rancher` y `Veterinarian` a `rancher` y `veterinarian`.
+
+### Pinia
+
+Se configura en `src/pinia.js` y se usa en los stores de cada modulo. Sirve para centralizar estado y casos de uso: cargar datos, crear registros, editar, eliminar y compartir informacion entre pantallas.
+
+### Vue I18n
+
+Se configura en `src/i18n.js`, con textos en `src/locales/es.json` y `src/locales/en.json`. Sirve para manejar traducciones en espanol e ingles. Las vistas usan `t()` para leer textos segun el idioma activo.
+
+### Axios
+
+Se usa en `src/shared/infrastructure/base-api.js`. Sirve para hacer peticiones HTTP al backend. La URL base se define en `.env.development` como `http://localhost:5191/api/v1`. El interceptor agrega el token JWT al header `Authorization`.
+
+### Chart.js
+
+Se usa a traves del componente `pv-chart` de PrimeVue en analiticas y reportes. Sirve para graficos de estado sanitario, registros por tipo y atenciones por hato.
+
+### Backend AniTec Platform
+
+El frontend consume el backend .NET real. Ya no depende de `json-server`. Los datos semilla se crean desde el backend cuando la base esta vacia, incluyendo usuarios, roles, fincas, animales, sanidad, finanzas, actividades, clientes veterinarios, dispositivos IoT, metricas, planes y pagos mock.
+
+## Endpoints Consumidos
+
+- `POST /authentication/sign-in`
+- `GET /users`
+- `GET /herds`
+- `GET /animals`
+- `GET /health-events`
+- `GET /financial-records`
+- `GET /farm-events`
+- `GET /report-metrics`
+- `GET /analytics/ranchers/{rancherId}/dashboard`
+- `GET /analytics/veterinarians/{veterinarianId}/dashboard`
+- `GET /veterinarian/{veterinarianId}/clients`
+- `GET /veterinarian/{veterinarianId}/available-ranchers`
+- `POST /veterinarian/{veterinarianId}/clients/{rancherId}`
+- `DELETE /veterinarian/{veterinarianId}/clients/{rancherId}`
+- `GET /devices`
+- `GET /devices/{id}/metrics`
+- `GET /devices/{id}/latest-metric`
+- `GET /subscription-plans`
+- `GET /subscriptions/users/{userId}/active`
+- `GET /subscriptions/users/{userId}/payments`
+- `POST /subscriptions/mock-checkout`
+
+## Rutas Principales
 
 - `/iam/sign-in`
 - `/rancher/dashboard`
 - `/veterinarian/dashboard`
 - `/veterinary/clients`
+- `/veterinary/add-client`
 - `/veterinary/patients`
-- `/home`
+- `/livestock/herds`
 - `/livestock/animals`
 - `/sanitary/health-events`
 - `/financial/records`
 - `/activities/calendar`
 - `/analytics/dashboard`
-- `/about`
+- `/iot`
+- `/subscriptions`
 
-## Datos mock
+## Notas
 
-Los datos iniciales están en `server/db.json` e incluyen animales, hatos, eventos sanitarios, movimientos financieros, actividades de calendario y métricas para analíticas.
+La carpeta `server/` puede conservarse solo como referencia historica de datos mock, pero el flujo actual de la aplicacion no requiere ejecutar `npm run server`.
 
-## Usuarios de prueba
-
-La autenticación actual es mock y se maneja en `src/iam/application/iam.store.js`.
-
-| Rol         | Usuario       | Contraseña  | Redirección               |
-| ----------- | ------------- | ----------- | ------------------------- |
-| Ganadero    | `ganadero`    | `anitec123` | `/rancher/dashboard`      |
-| Veterinario | `veterinaria` | `anitec123` | `/veterinarian/dashboard` |
-
-El menu lateral cambia según el rol autenticado. El ganadero accede a panel ganadero, fincas, animales, sanidad, calendario, finanzas y analíticas. El veterinario accede a clientes asignados, pacientes, registros sanitarios, agenda y analíticas.
+NewsAPI y Logo.dev no se usan actualmente. Podrian agregarse en el futuro para noticias agropecuarias o logos de aliados, pero no forman parte del frontend conectado al backend.

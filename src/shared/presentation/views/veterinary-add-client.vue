@@ -1,8 +1,11 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import useIamStore from "../../../iam/application/iam.store.js";
 import useLivestockStore from "../../../livestock/application/livestock.store.js";
+
+const { t } = useI18n();
 
 const router = useRouter();
 
@@ -12,18 +15,22 @@ const livestock = useLivestockStore();
 
 const search = ref("");
 
+const availableRanchers = ref([]);
+
 onMounted(async () => {
+  await iam.fetchVeterinarianClients();
+  availableRanchers.value = await iam.fetchAvailableRanchers();
   if (!livestock.herds.length) await livestock.fetchHerds();
   if (!livestock.loaded) await livestock.fetchAnimals();
 });
 
 /**
- * Gets all demo users with the rancher role.
+ * Gets all available users with the rancher role.
  */
 const ranchers = computed(() => {
   const rancherUsers = [];
 
-  iam.demoUsers.forEach((user) => {
+  availableRanchers.value.forEach((user) => {
     if (user.role === "rancher") {
       rancherUsers.push(user);
     }
@@ -87,11 +94,15 @@ const animalCountByRancher = (rancherId) =>
   livestock.getAnimalsByOwnerId(rancherId).length;
 
 /**
- * Simulates the request to add a rancher to the veterinarian portfolio.
+ * Adds a rancher to the veterinarian portfolio.
  * @param {Object} rancher Selected rancher.
  */
-const sendRequest = (rancher) => {
-  iam.assignRancherToVeterinarian(rancher.id);
+const sendRequest = async (rancher) => {
+  const assigned = await iam.assignRancherToVeterinarian(rancher.id);
+
+  if (assigned) {
+    availableRanchers.value = await iam.fetchAvailableRanchers();
+  }
 };
 </script>
 
@@ -99,15 +110,12 @@ const sendRequest = (rancher) => {
   <section class="panel client-discovery-panel">
     <div class="panel-header">
       <div>
-        <span class="section-chip">Clientes ganaderos</span>
-        <h2>Agregar cliente</h2>
-        <p>
-          Busca ganaderos registrados y envia una peticion para acceder a sus
-          datos productivos y sanitarios.
-        </p>
+        <span class="section-chip">{{ t("veterinary.rancherClients") }}</span>
+        <h2>{{ t("veterinary.addClientTitle") }}</h2>
+        <p>{{ t("veterinary.addClientSubtitle") }}</p>
       </div>
       <pv-button
-        label="Volver a clientes"
+        :label="t('veterinary.backToClients')"
         icon="pi pi-arrow-left"
         severity="secondary"
         outlined
@@ -120,10 +128,10 @@ const sendRequest = (rancher) => {
         <i class="pi pi-search"></i>
         <pv-input-text
           v-model="search"
-          placeholder="Buscar por nombre del ganadero o finca"
+          :placeholder="t('veterinary.searchRancherPlaceholder')"
         />
       </span>
-      <small>{{ filteredRanchers.length }} ganaderos encontrados</small>
+      <small>{{ t("veterinary.ranchersFound", { count: filteredRanchers.length }) }}</small>
     </div>
 
     <div class="client-discovery-grid">
@@ -139,8 +147,8 @@ const sendRequest = (rancher) => {
           <div>
             <h3>{{ rancher.fullName }}</h3>
             <span
-              >{{ herdsByRancher(rancher.id).length }} fincas -
-              {{ animalCountByRancher(rancher.id) }} animales</span
+              >{{ herdsByRancher(rancher.id).length }} {{ t("veterinary.farms").toLowerCase() }} -
+              {{ animalCountByRancher(rancher.id) }} {{ t("veterinary.animals").toLowerCase() }}</span
             >
           </div>
         </div>
@@ -150,19 +158,19 @@ const sendRequest = (rancher) => {
             herd.name
           }}</span>
           <span v-if="!herdsByRancher(rancher.id).length"
-            >Sin fincas registradas</span
+            >{{ t("veterinary.noFarms") }}</span
           >
         </div>
 
         <footer>
           <pv-tag
             v-if="isAssignedToCurrentVet(rancher)"
-            value="Cliente agregado"
+            :value="t('veterinary.clientAdded')"
             severity="success"
           />
           <pv-button
             v-else
-            label="Enviar peticion"
+            :label="t('veterinary.addClient')"
             icon="pi pi-send"
             @click="sendRequest(rancher)"
           />
@@ -171,7 +179,7 @@ const sendRequest = (rancher) => {
     </div>
 
     <p v-if="!filteredRanchers.length" class="empty-state">
-      No se encontraron ganaderos con ese criterio.
+      {{ t("veterinary.noRanchersFound") }}
     </p>
   </section>
 </template>

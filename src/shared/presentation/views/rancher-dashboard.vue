@@ -214,6 +214,7 @@ const animalSeverity = (status) => {
           :options="herdOptions"
           option-label="name"
           option-value="id"
+          placeholder="Todas las fincas"
         />
         <pv-button
           :label="t('herds.new')"
