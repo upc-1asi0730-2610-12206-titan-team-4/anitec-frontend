@@ -105,9 +105,11 @@ const save = async () => {
     followUp: form.value.followUp,
     nextDueDate: form.value.nextDueDate,
   });
-  if (isEdit.value) await store.updateHealthEvent(event);
-  else await store.addHealthEvent(event);
-  router.push({ name: "sanitary-health-events" });
+  const saved = isEdit.value
+    ? await store.updateHealthEvent(event)
+    : await store.addHealthEvent(event);
+
+  if (saved) router.push({ name: "sanitary-health-events" });
 };
 
 const formTitle = computed(() => {
@@ -123,10 +125,7 @@ const formTitle = computed(() => {
       <div>
         <span class="section-chip">Sanitary BC</span>
         <h2>{{ formTitle }}</h2>
-        <p>
-          Documenta sintomas, diagnostico, tratamiento y seguimiento sanitario
-          del animal.
-        </p>
+        <p>{{ t("health.formSubtitle") }}</p>
       </div>
     </div>
     <label
@@ -136,6 +135,7 @@ const formTitle = computed(() => {
         :options="animalOptions"
         option-label="name"
         option-value="id"
+        required
     /></label>
     <label
       >{{ t("health.type")
@@ -153,7 +153,7 @@ const formTitle = computed(() => {
       >{{ t("health.veterinarian")
       }}<pv-input-text
         v-model="form.veterinarian"
-        placeholder="Nombre del responsable"
+        :placeholder="t('health.veterinarianPlaceholder')"
         required
     /></label>
     <label class="full"
@@ -161,7 +161,7 @@ const formTitle = computed(() => {
       }}<pv-textarea
         v-model="form.description"
         rows="4"
-        placeholder="Describe sintomas, hallazgos u observaciones"
+        :placeholder="t('health.descriptionPlaceholder')"
         required
     /></label>
     <label class="full"
@@ -179,6 +179,9 @@ const formTitle = computed(() => {
     <label class="full"
       >{{ t("health.followUp") }}<pv-textarea v-model="form.followUp" rows="3"
     /></label>
+    <p v-if="store.errors.length" class="error-text full">
+      {{ t("health.saveError") }}
+    </p>
     <div class="form-actions friendly-actions full">
       <pv-button :label="t('common.save')" icon="pi pi-save" type="submit" />
       <pv-button
