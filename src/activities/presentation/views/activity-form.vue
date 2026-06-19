@@ -88,9 +88,11 @@ const save = async () => {
     priority: form.value.priority,
     status: form.value.status,
   });
-  if (isEdit.value) await store.updateActivity(activity);
-  else await store.addActivity(activity);
-  router.push({ name: "activities-calendar" });
+  const saved = isEdit.value
+    ? await store.updateActivity(activity)
+    : await store.addActivity(activity);
+
+  if (saved) router.push({ name: "activities-calendar" });
 };
 
 const formTitle = computed(() => {
@@ -106,17 +108,14 @@ const formTitle = computed(() => {
       <div>
         <span class="section-chip">Activities BC</span>
         <h2>{{ formTitle }}</h2>
-        <p>
-          Programa actividades, visitas, controles productivos o recordatorios
-          importantes.
-        </p>
+        <p>{{ t("activities.formSubtitle") }}</p>
       </div>
     </div>
     <label class="full"
       >{{ t("activities.activityTitle")
       }}<pv-input-text
         v-model="form.title"
-        placeholder="Ej. Vacunacion del lote principal"
+        :placeholder="t('activities.titlePlaceholder')"
         required
     /></label>
     <label
@@ -135,6 +134,9 @@ const formTitle = computed(() => {
       >{{ t("activities.status")
       }}<pv-select v-model="form.status" :options="statusOptions"
     /></label>
+    <p v-if="store.errors.length" class="error-text full">
+      {{ t("activities.saveError") }}
+    </p>
     <div class="form-actions friendly-actions full">
       <pv-button :label="t('common.save')" icon="pi pi-save" type="submit" />
       <pv-button

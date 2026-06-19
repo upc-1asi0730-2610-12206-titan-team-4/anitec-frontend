@@ -25,4 +25,16 @@ export class AnalyticsApi extends BaseApi {
     getMetrics() {
         return this.#metricsEndpoint.getAll();
     }
+
+    /** @param {number|string} rancherId Rancher identifier. @returns {Promise} */
+    getRancherDashboard(rancherId) {
+        return this.http.get(`/analytics/ranchers/${rancherId}/dashboard`);
+    }
+
+    /** @param {number|string} veterinarianId Veterinarian identifier. @returns {Promise} */
+    getVeterinarianDashboard(veterinarianId) {
+        return this.http.get(
+            `/analytics/veterinarians/${veterinarianId}/dashboard`,
+        );
+    }
 }
