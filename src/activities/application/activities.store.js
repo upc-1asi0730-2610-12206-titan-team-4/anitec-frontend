@@ -69,12 +69,17 @@ const useActivitiesStore = defineStore("activities", () => {
     function addActivity(activity) {
         return api
             .createActivity(activity)
-            .then((response) =>
+            .then((response) => {
                 activities.value.push(
                     FarmActivityAssembler.toEntityFromResource(response.data),
-                ),
-            )
-            .catch((error) => errors.value.push(error));
+                );
+                errors.value = [];
+                return true;
+            })
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**
@@ -101,8 +106,13 @@ const useActivitiesStore = defineStore("activities", () => {
                 }
 
                 if (index !== -1) activities.value[index] = updated;
+                errors.value = [];
+                return true;
             })
-            .catch((error) => errors.value.push(error));
+            .catch((error) => {
+                errors.value.push(error);
+                return false;
+            });
     }
 
     /**
