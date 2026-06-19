@@ -16,10 +16,11 @@ const sanitary = useSanitaryStore();
 
 const iam = useIamStore();
 
-onMounted(() => {
-  if (!livestock.herds.length) livestock.fetchHerds();
-  if (!livestock.loaded) livestock.fetchAnimals();
-  if (!sanitary.loaded) sanitary.fetchHealthEvents();
+onMounted(async () => {
+  await iam.fetchVeterinarianClients();
+  if (!livestock.herds.length) await livestock.fetchHerds();
+  if (!livestock.loaded) await livestock.fetchAnimals();
+  if (!sanitary.loaded) await sanitary.fetchHealthEvents();
 });
 
 const clients = computed(() => livestock.getAssignedRanchers());
@@ -104,7 +105,7 @@ const locationsByClient = (clientId) => {
     return locations.join(", ");
   }
 
-  return "Sin ubicacion";
+  return t("veterinary.location");
 };
 
 const herdNamesByClient = (clientId) => {
@@ -118,15 +119,15 @@ const herdNamesByClient = (clientId) => {
     return names.join(", ");
   }
 
-  return "Sin fincas";
+  return t("veterinary.noFarms");
 };
 
 /**
  * Removes a client from the current veterinarian portfolio.
  * @param {Object} client Selected client.
  */
-const removeClient = (client) => {
-  iam.unassignRancherFromVeterinarian(client.id);
+const removeClient = async (client) => {
+  await iam.unassignRancherFromVeterinarian(client.id);
 };
 
 const alertSeverity = (clientId) => {
@@ -162,32 +163,32 @@ const alertSeverity = (clientId) => {
             <h3>{{ client.fullName }}</h3>
           </div>
           <pv-tag
-            :value="`${alertsByClient(client.id)} alertas`"
+            :value="t('veterinary.alerts', { count: alertsByClient(client.id) })"
             :severity="alertSeverity(client.id)"
           />
         </header>
 
         <dl>
           <div>
-            <dt>Fincas</dt>
+            <dt>{{ t("veterinary.farms") }}</dt>
             <dd>{{ herdNamesByClient(client.id) }}</dd>
           </div>
           <div>
-            <dt>Ubicacion</dt>
+            <dt>{{ t("veterinary.location") }}</dt>
             <dd>{{ locationsByClient(client.id) }}</dd>
           </div>
           <div>
-            <dt>Animales</dt>
-            <dd>{{ animalsByClient(client.id).length }} registrados</dd>
+            <dt>{{ t("veterinary.animals") }}</dt>
+            <dd>{{ t("veterinary.registeredAnimals", { count: animalsByClient(client.id).length }) }}</dd>
           </div>
           <div>
-            <dt>Tipos</dt>
-            <dd>{{ speciesByClient(client.id) }} especies</dd>
+            <dt>{{ t("veterinary.types") }}</dt>
+            <dd>{{ t("veterinary.species", { count: speciesByClient(client.id) }) }}</dd>
           </div>
           <div>
-            <dt>Sanidad</dt>
+            <dt>{{ t("veterinary.health") }}</dt>
             <dd>
-              {{ healthEventsByClient(client.id).length }} registros sanitarios
+              {{ t("veterinary.healthRecords", { count: healthEventsByClient(client.id).length }) }}
             </dd>
           </div>
         </dl>
@@ -205,7 +206,7 @@ const alertSeverity = (clientId) => {
             "
           />
           <pv-button
-            label="Eliminar cliente"
+            :label="t('veterinary.deleteClient')"
             icon="pi pi-trash"
             severity="danger"
             outlined
@@ -216,7 +217,7 @@ const alertSeverity = (clientId) => {
     </div>
 
     <p v-if="!clients.length" class="empty-state">
-      No tienes clientes ganaderos asignados.
+      {{ t("veterinary.noAssignedClients") }}
     </p>
   </section>
 </template>
