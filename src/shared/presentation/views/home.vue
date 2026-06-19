@@ -65,7 +65,7 @@ const recentActivities = computed(() => {
   <div class="dashboard">
     <section class="hero-panel">
       <div>
-        <span class="section-chip">Control rural</span>
+        <span class="section-chip">{{ t("home.chip") }}</span>
         <h2>{{ t("home.title") }}</h2>
         <p>{{ t("home.content") }}</p>
       </div>
@@ -88,35 +88,35 @@ const recentActivities = computed(() => {
     <section class="metric-grid">
       <article class="metric-card">
         <i class="pi pi-id-card"></i>
-        <span>Animales</span>
+        <span>{{ t("home.animals") }}</span>
         <strong>{{ livestock.animalCount }}</strong>
-        <small>{{ livestock.healthyCount }} saludables</small>
+        <small>{{ livestock.healthyCount }} {{ t("home.healthy") }}</small>
       </article>
       <article class="metric-card">
         <i class="pi pi-heart"></i>
-        <span>Alertas sanitarias</span>
+        <span>{{ t("home.healthAlerts") }}</span>
         <strong>{{ sanitary.pendingAlerts }}</strong>
-        <small>Seguimientos activos</small>
+        <small>{{ t("home.activeFollowUps") }}</small>
       </article>
       <article class="metric-card">
         <i class="pi pi-wallet"></i>
-        <span>Balance mensual</span>
+        <span>{{ t("home.monthlyBalance") }}</span>
         <strong>S/ {{ financial.balance }}</strong>
-        <small>Ingresos menos egresos</small>
+        <small>{{ t("home.incomeMinusExpenses") }}</small>
       </article>
       <article class="metric-card">
         <i class="pi pi-calendar"></i>
-        <span>Prioridad alta</span>
+        <span>{{ t("home.highPriority") }}</span>
         <strong>{{ activities.highPriorityCount }}</strong>
-        <small>Actividades proximas</small>
+        <small>{{ t("home.upcomingActivities") }}</small>
       </article>
     </section>
 
     <section class="split-grid">
       <article class="panel">
         <div class="panel-header">
-          <h3>Animales recientes</h3>
-          <router-link to="/livestock/animals">Ver todos</router-link>
+          <h3>{{ t("home.recentAnimals") }}</h3>
+          <router-link to="/livestock/animals">{{ t("home.viewAll") }}</router-link>
         </div>
         <div class="compact-list">
           <div
@@ -136,8 +136,8 @@ const recentActivities = computed(() => {
 
       <article class="panel">
         <div class="panel-header">
-          <h3>Proximas actividades</h3>
-          <router-link to="/activities/calendar">Abrir calendario</router-link>
+          <h3>{{ t("home.upcomingActivities") }}</h3>
+          <router-link to="/activities/calendar">{{ t("home.openCalendar") }}</router-link>
         </div>
         <div class="compact-list">
           <div
