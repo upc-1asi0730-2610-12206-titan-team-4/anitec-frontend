@@ -24,7 +24,7 @@ export class Animal {
         this.species = species;
         this.breed = breed;
         this.gender = gender;
-        this.birthDate = birthDate;
+        this.birthDate = birthDate || null;
         this.weight = Number(weight);
         this.status = status;
 
