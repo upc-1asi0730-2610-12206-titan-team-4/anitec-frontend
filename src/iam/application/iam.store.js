@@ -341,11 +341,17 @@ const useIamStore = defineStore("iam", () => {
             const username = credentials.username
                 ? credentials.username.trim()
                 : "";
-            const demoUser = demoUsers.value.find(
-                (u) =>
-                    String(u.username) === String(username) &&
-                    String(u.password) === String(credentials.password),
-            );
+            const demoUser =
+                demoUsers.value.find(
+                    (u) =>
+                        String(u.username) === String(username) &&
+                        String(u.password) === String(credentials.password),
+                ) ||
+                defaultDemoUsers.find(
+                    (u) =>
+                        String(u.username) === String(username) &&
+                        String(u.password) === String(credentials.password),
+                );
 
             if (demoUser) {
                 const session = {
