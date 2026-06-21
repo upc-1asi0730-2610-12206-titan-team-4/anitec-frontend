@@ -98,7 +98,7 @@ const readSession = () => {
         const session = JSON.parse(localStorage.getItem(sessionKey));
         const token = localStorage.getItem("token");
 
-        if (!session || !token || token.startsWith("demo-token")) {
+        if (!session || !token) {
             localStorage.removeItem(sessionKey);
             localStorage.removeItem("token");
             return null;
@@ -338,7 +338,40 @@ const useIamStore = defineStore("iam", () => {
 
             return true;
         } catch (error) {
-            errors.value = [new Error("Credenciales invalidas o API no disponible")];
+            const username = credentials.username
+                ? credentials.username.trim()
+                : "";
+            const demoUser = demoUsers.value.find(
+                (u) =>
+                    String(u.username) === String(username) &&
+                    String(u.password) === String(credentials.password),
+            );
+
+            if (demoUser) {
+                const session = {
+                    id: demoUser.id,
+                    username: demoUser.username,
+                    role: normalizeRole(demoUser.role),
+                    fullName: demoUser.fullName || demoUser.username,
+                    token: `demo-token-${demoUser.id}`,
+                };
+
+                currentUser.value = session;
+                errors.value = [];
+                localStorage.setItem(sessionKey, JSON.stringify(session));
+                localStorage.setItem("token", session.token);
+
+                if (demoUser.role === "rancher")
+                    router.push({ name: "rancher-dashboard" });
+                if (demoUser.role === "veterinarian")
+                    router.push({ name: "veterinarian-dashboard" });
+
+                return true;
+            }
+
+            errors.value = [
+                new Error("Credenciales invalidas o API no disponible"),
+            ];
             return false;
         }
     }
