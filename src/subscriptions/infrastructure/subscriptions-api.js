@@ -35,4 +35,14 @@ export class SubscriptionsApi extends BaseApi {
     mockCheckout(checkout) {
         return this.http.post("/subscriptions/mock-checkout", checkout);
     }
+
+    /** @param {number|string} planId Subscription plan identifier. @returns {Promise} */
+    createStripeCheckout(planId) {
+        return this.http.post("/subscriptions/stripe-checkout", { planId });
+    }
+
+    /** @param {string} sessionId Stripe checkout session identifier. @returns {Promise} */
+    confirmStripeCheckout(sessionId) {
+        return this.http.get(`/subscriptions/stripe-checkout/${sessionId}/confirm`);
+    }
 }

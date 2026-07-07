@@ -80,6 +80,25 @@ const useSubscriptionsStore = defineStore("subscriptions", () => {
     }
 
     function checkout(userId, plan) {
+        loading.value = true;
+        errors.value = [];
+        return api
+            .createStripeCheckout(plan.id)
+            .then((response) => {
+                lastCheckout.value = response.data;
+                window.location.href = response.data.checkoutUrl;
+                return response.data;
+            })
+            .catch((error) => {
+                errors.value.push(error);
+                return null;
+            })
+            .finally(() => {
+                loading.value = false;
+            });
+    }
+
+    function mockCheckout(userId, plan) {
         return api
             .mockCheckout({
                 userId,
@@ -99,6 +118,39 @@ const useSubscriptionsStore = defineStore("subscriptions", () => {
             .catch((error) => errors.value.push(error));
     }
 
+    function confirmCheckout(sessionId, userId) {
+        loading.value = true;
+        errors.value = [];
+        return api
+            .confirmStripeCheckout(sessionId)
+            .then(async (response) => {
+                lastCheckout.value = response.data;
+                activeSubscription.value = response.data.subscription;
+                payments.value = [
+                    PaymentAssembler.toEntityFromResource(response.data.payment),
+                    ...payments.value.filter(
+                        (payment) =>
+                            payment.providerPaymentId !==
+                            response.data.payment.providerPaymentId,
+                    ),
+                ];
+
+                if (userId) {
+                    await fetchActiveSubscription(userId);
+                    await fetchPayments(userId);
+                }
+
+                return response.data;
+            })
+            .catch((error) => {
+                errors.value.push(error);
+                return null;
+            })
+            .finally(() => {
+                loading.value = false;
+            });
+    }
+
     return {
         plans,
         activeSubscription,
@@ -112,6 +164,8 @@ const useSubscriptionsStore = defineStore("subscriptions", () => {
         fetchActiveSubscription,
         fetchPayments,
         checkout,
+        mockCheckout,
+        confirmCheckout,
     };
 });
 

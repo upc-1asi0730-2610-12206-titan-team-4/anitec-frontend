@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, toRefs } from "vue";
+import { computed, onMounted, toRefs } from "vue";
 import { useConfirm } from "primevue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import useActivitiesStore from "../../application/activities.store.js";
+import useIamStore from "../../../iam/application/iam.store.js";
 
 const { t } = useI18n();
 
@@ -12,7 +13,8 @@ const router = useRouter();
 const confirm = useConfirm();
 
 const store = useActivitiesStore();
-const { activities, loaded, errors } = toRefs(store);
+const iam = useIamStore();
+const { loaded, errors } = toRefs(store);
 
 onMounted(() => {
   if (!store.loaded) store.fetchActivities();
@@ -28,6 +30,10 @@ const severityFor = (priority) => {
   if (priority === "Media") return "warn";
   return "info";
 };
+
+const visibleActivities = computed(() =>
+  store.getActivitiesByUser(iam.currentRole, iam.currentUserId),
+);
 
 /**
  * Shows the confirmation before deleting an activity.
@@ -57,7 +63,7 @@ const confirmDelete = (activity) =>
     </div>
     <div class="timeline-list">
       <article
-        v-for="activity in activities"
+        v-for="activity in visibleActivities"
         :key="activity.id"
         class="timeline-item"
       >
@@ -92,7 +98,7 @@ const confirmDelete = (activity) =>
         </div>
       </article>
     </div>
-    <p v-if="!activities.length && loaded" class="empty-state">
+    <p v-if="!visibleActivities.length && loaded" class="empty-state">
       No hay actividades programadas.
     </p>
     <p v-if="errors.length" class="error-text">{{ t("common.errors") }}</p>

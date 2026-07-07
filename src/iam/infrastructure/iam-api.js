@@ -3,6 +3,9 @@ import { BaseApi } from "../../shared/infrastructure/base-api.js";
 const signInEndpointPath =
     import.meta.env.VITE_SIGNIN_ENDPOINT_PATH || "/authentication/sign-in";
 
+const signUpEndpointPath =
+    import.meta.env.VITE_SIGNUP_ENDPOINT_PATH || "/authentication/sign-up";
+
 const usersEndpointPath = import.meta.env.VITE_USERS_ENDPOINT_PATH || "/users";
 
 /**
@@ -12,6 +15,11 @@ export class IamApi extends BaseApi {
     /** @param {Object} credentials Username and password. @returns {Promise} */
     signIn(credentials) {
         return this.http.post(signInEndpointPath, credentials);
+    }
+
+    /** @param {Object} resource User registration data. @returns {Promise} */
+    signUp(resource) {
+        return this.http.post(signUpEndpointPath, resource);
     }
 
     /** @returns {Promise} Lists platform users. */

@@ -115,12 +115,20 @@ const rancherHealthEvents = computed(() => {
  * Sorts and shows upcoming calendar activities.
  */
 const upcomingActivities = computed(() => {
-  const list = activities.activities.slice();
+  const list = activities.getActivitiesByOwnerId(iam.currentUserId).slice();
   list.sort((firstActivity, secondActivity) =>
     firstActivity.date.localeCompare(secondActivity.date),
   );
   return list.slice(0, 4);
 });
+
+const rancherIncomeTotal = computed(() =>
+  financial.getIncomeTotalByOwnerId(iam.currentUserId),
+);
+
+const rancherBalance = computed(() =>
+  financial.getBalanceByOwnerId(iam.currentUserId),
+);
 
 /**
  * Sorts and shows the most recent health visits.
@@ -240,8 +248,8 @@ const animalSeverity = (status) => {
       <article class="metric-card">
         <i class="pi pi-wallet"></i>
         <span>{{ t("dashboards.monthlyBalance") }}</span>
-        <strong>S/ {{ financial.balance }}</strong>
-        <small>Ingresos: S/ {{ financial.incomeTotal }}</small>
+        <strong>S/ {{ rancherBalance }}</strong>
+        <small>Ingresos: S/ {{ rancherIncomeTotal }}</small>
       </article>
       <article class="metric-card">
         <i class="pi pi-calendar-clock"></i>

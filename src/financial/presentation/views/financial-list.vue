@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, toRefs } from "vue";
+import { computed, onMounted, toRefs } from "vue";
 import { useConfirm } from "primevue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import useFinancialStore from "../../application/financial.store.js";
+import useIamStore from "../../../iam/application/iam.store.js";
 
 const { t } = useI18n();
 
@@ -12,7 +13,8 @@ const router = useRouter();
 const confirm = useConfirm();
 
 const store = useFinancialStore();
-const { records, loaded, errors } = toRefs(store);
+const iam = useIamStore();
+const { loaded, errors } = toRefs(store);
 
 onMounted(() => {
   if (!store.loaded) store.fetchRecords();
@@ -27,6 +29,22 @@ const severityFor = (type) => {
   if (type === "Ingreso") return "success";
   return "danger";
 };
+
+const visibleRecords = computed(() =>
+  store.getRecordsByOwnerId(iam.currentUserId),
+);
+
+const visibleIncomeTotal = computed(() =>
+  store.getIncomeTotalByOwnerId(iam.currentUserId),
+);
+
+const visibleExpenseTotal = computed(() =>
+  store.getExpenseTotalByOwnerId(iam.currentUserId),
+);
+
+const visibleBalance = computed(() =>
+  store.getBalanceByOwnerId(iam.currentUserId),
+);
 
 /**
  * Shows the confirmation before deleting a financial record.
@@ -56,17 +74,17 @@ const confirmDelete = (record) =>
     </div>
     <section class="metric-grid compact">
       <article class="metric-card">
-        <span>Ingresos</span><strong>S/ {{ store.incomeTotal }}</strong>
+        <span>Ingresos</span><strong>S/ {{ visibleIncomeTotal }}</strong>
       </article>
       <article class="metric-card">
-        <span>Egresos</span><strong>S/ {{ store.expenseTotal }}</strong>
+        <span>Egresos</span><strong>S/ {{ visibleExpenseTotal }}</strong>
       </article>
       <article class="metric-card">
-        <span>Balance</span><strong>S/ {{ store.balance }}</strong>
+        <span>Balance</span><strong>S/ {{ visibleBalance }}</strong>
       </article>
     </section>
     <pv-data-table
-      :value="records"
+      :value="visibleRecords"
       :loading="!loaded"
       paginator
       :rows="8"
@@ -109,6 +127,9 @@ const confirmDelete = (record) =>
         </template>
       </pv-column>
     </pv-data-table>
+    <p v-if="!visibleRecords.length && loaded" class="empty-state">
+      No hay movimientos financieros registrados.
+    </p>
     <p v-if="errors.length" class="error-text">{{ t("common.errors") }}</p>
   </div>
 </template>
