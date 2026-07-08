@@ -98,26 +98,6 @@ const useSubscriptionsStore = defineStore("subscriptions", () => {
             });
     }
 
-    function mockCheckout(userId, plan) {
-        return api
-            .mockCheckout({
-                userId,
-                planId: plan.id,
-                amount: plan.price,
-                currency: "PEN",
-            })
-            .then((response) => {
-                lastCheckout.value = response.data;
-                activeSubscription.value = response.data.subscription;
-                payments.value = [
-                    PaymentAssembler.toEntityFromResource(response.data.payment),
-                    ...payments.value,
-                ];
-                return response.data;
-            })
-            .catch((error) => errors.value.push(error));
-    }
-
     function confirmCheckout(sessionId, userId) {
         loading.value = true;
         errors.value = [];
@@ -164,7 +144,6 @@ const useSubscriptionsStore = defineStore("subscriptions", () => {
         fetchActiveSubscription,
         fetchPayments,
         checkout,
-        mockCheckout,
         confirmCheckout,
     };
 });

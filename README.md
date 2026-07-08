@@ -202,7 +202,8 @@ El frontend consume el backend .NET real. Ya no depende de `json-server`. Los da
 - `GET /subscription-plans`
 - `GET /subscriptions/users/{userId}/active`
 - `GET /subscriptions/users/{userId}/payments`
-- `POST /subscriptions/mock-checkout`
+- `POST /subscriptions/stripe-checkout`
+- `GET /subscriptions/stripe-checkout/{sessionId}/confirm`
 
 ## Rutas Principales
 
@@ -223,7 +224,5 @@ El frontend consume el backend .NET real. Ya no depende de `json-server`. Los da
 - `/subscriptions`
 
 ## Notas
-
-La carpeta `server/` puede conservarse solo como referencia historica de datos mock, pero el flujo actual de la aplicacion no requiere ejecutar `npm run server`.
 
 NewsAPI y Logo.dev no se usan actualmente. Podrian agregarse en el futuro para noticias agropecuarias o logos de aliados, pero no forman parte del frontend conectado al backend.
