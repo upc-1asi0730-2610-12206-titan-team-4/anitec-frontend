@@ -102,15 +102,15 @@ const useLivestockStore = defineStore("livestock", () => {
     }
 
     /**
-     * Finds a rancher inside the cached users.
+     * Finds a rancher inside the platform users.
      * @param {number|string} id User identifier.
      * @returns {Object|null}
      */
     function getRancherById(id) {
         let selectedRancher = null;
 
-        for (let i = 0; i < iam.demoUsers.length; i++) {
-            const user = iam.demoUsers[i];
+        for (let i = 0; i < iam.users.length; i++) {
+            const user = iam.users[i];
 
             if (user.role === "rancher" && Number(user.id) === Number(id)) {
                 selectedRancher = user;
@@ -128,7 +128,7 @@ const useLivestockStore = defineStore("livestock", () => {
     function getAssignedRanchers(veterinarianId = iam.currentUserId) {
         const ranchers = [];
 
-        iam.demoUsers.forEach((user) => {
+        iam.users.forEach((user) => {
             if (
                 user.role === "rancher" &&
                 Number(user.veterinarianId) === Number(veterinarianId)

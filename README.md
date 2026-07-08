@@ -1,6 +1,6 @@
 # AniTec Web App
 
-Frontend Vue 3 + Vite para la aplicacion web de AniTec. La aplicacion esta organizada por bounded contexts y consume el backend real `anitec-platform-main`, desarrollado con .NET y MySQL.
+Frontend Vue 3 + Vite para la aplicacion web de AniTec. La aplicacion esta organizada por bounded contexts y consume el backend real `anitec-backend`, desarrollado con .NET y MySQL.
 
 ## Stack
 
@@ -15,10 +15,36 @@ Frontend Vue 3 + Vite para la aplicacion web de AniTec. La aplicacion esta organ
 
 ## Flujo De Ejecucion
 
-Primero iniciar MySQL local y luego levantar el backend:
+El frontend consume el backend real de AniTec. Por eso, antes de abrir la aplicacion web, primero debe estar levantado MySQL y luego el backend.
+
+### 1. Iniciar MySQL
+
+Verifica que el servicio de MySQL este iniciado. En Windows puedes usar la aplicacion **Services** y revisar que `MySQL80` este en estado `Running`.
+
+Tambien puedes probar desde PowerShell como administrador:
 
 ```powershell
-cd C:\Users\melga\AnitecProyecto\anitec-platform-main
+net start MySQL80
+```
+
+La base de datos usada por defecto es:
+
+```text
+anitec-platform
+```
+
+Si todavia no existe, puedes crearla desde MySQL Workbench:
+
+```sql
+CREATE DATABASE `anitec-platform`;
+```
+
+### 2. Levantar El Backend
+
+En una terminal:
+
+```powershell
+cd C:\Users\melga\Desktop\TrabajoFinalAppWeb\anitec-backend
 dotnet run --project Anitec.Platform
 ```
 
@@ -29,23 +55,56 @@ http://localhost:5191/api/v1
 http://localhost:5191/swagger
 ```
 
-Luego iniciar el frontend:
+### 3. Levantar El Frontend
+
+En otra terminal:
 
 ```powershell
-cd C:\Users\melga\AnitecProyecto\anitec-frontend
+cd C:\Users\melga\Desktop\TrabajoFinalAppWeb\anitec-frontend
 npm install
 npm run dev
 ```
 
-Para validar produccion:
+El frontend queda disponible normalmente en:
+
+```text
+http://localhost:5173
+```
+
+El archivo `.env.development` apunta al backend local:
+
+```text
+VITE_ANITEC_API_URL="http://localhost:5191/api/v1"
+```
+
+Para validar el build:
 
 ```powershell
 npm run build
 ```
 
-## Usuarios De Prueba
+## Acceso A La Aplicacion
 
-Todos usan la contrasena `anitec123`.
+AniTec ya usa IAM real. Puedes crear usuarios desde:
+
+```text
+http://localhost:5173/iam/sign-up
+```
+
+En el registro se debe seleccionar el tipo de cuenta:
+
+- `Ganadero`, enviado al backend como `Rancher`.
+- `Veterinario`, enviado al backend como `Veterinarian`.
+
+Luego puedes iniciar sesion desde:
+
+```text
+http://localhost:5173/iam/sign-in
+```
+
+## Usuarios Iniciales Del Seed
+
+Si la base de datos esta vacia, el backend crea algunos usuarios iniciales. Todos usan la contrasena `anitec123`.
 
 | Rol | Usuario | Dashboard |
 | --- | --- | --- |
@@ -123,6 +182,7 @@ El frontend consume el backend .NET real. Ya no depende de `json-server`. Los da
 ## Endpoints Consumidos
 
 - `POST /authentication/sign-in`
+- `POST /authentication/sign-up`
 - `GET /users`
 - `GET /herds`
 - `GET /animals`
@@ -142,11 +202,13 @@ El frontend consume el backend .NET real. Ya no depende de `json-server`. Los da
 - `GET /subscription-plans`
 - `GET /subscriptions/users/{userId}/active`
 - `GET /subscriptions/users/{userId}/payments`
-- `POST /subscriptions/mock-checkout`
+- `POST /subscriptions/stripe-checkout`
+- `GET /subscriptions/stripe-checkout/{sessionId}/confirm`
 
 ## Rutas Principales
 
 - `/iam/sign-in`
+- `/iam/sign-up`
 - `/rancher/dashboard`
 - `/veterinarian/dashboard`
 - `/veterinary/clients`
@@ -162,7 +224,5 @@ El frontend consume el backend .NET real. Ya no depende de `json-server`. Los da
 - `/subscriptions`
 
 ## Notas
-
-La carpeta `server/` puede conservarse solo como referencia historica de datos mock, pero el flujo actual de la aplicacion no requiere ejecutar `npm run server`.
 
 NewsAPI y Logo.dev no se usan actualmente. Podrian agregarse en el futuro para noticias agropecuarias o logos de aliados, pero no forman parte del frontend conectado al backend.

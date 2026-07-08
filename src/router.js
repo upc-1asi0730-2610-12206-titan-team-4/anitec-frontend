@@ -36,6 +36,12 @@ const deviceForm = () => import("./devices/presentation/views/device-form.vue");
 const subscriptionPlans = () =>
     import("./subscriptions/presentation/views/subscription-plans.vue");
 
+const subscriptionSuccess = () =>
+    import("./subscriptions/presentation/views/subscription-success.vue");
+
+const subscriptionCancel = () =>
+    import("./subscriptions/presentation/views/subscription-cancel.vue");
+
 const pageNotFound = () =>
     import("./shared/presentation/views/page-not-found.vue");
 
@@ -149,6 +155,26 @@ const routes = [
         },
     },
     {
+        path: "/subscriptions/success",
+        name: "subscription-success",
+        component: subscriptionSuccess,
+        meta: {
+            title: "Pago confirmado",
+            titleKey: "subscriptions.successTitle",
+            roles: ["rancher", "veterinarian"],
+        },
+    },
+    {
+        path: "/subscriptions/cancel",
+        name: "subscription-cancel",
+        component: subscriptionCancel,
+        meta: {
+            title: "Pago cancelado",
+            titleKey: "subscriptions.cancelTitle",
+            roles: ["rancher", "veterinarian"],
+        },
+    },
+    {
         path: "/about",
         name: "about",
         component: about,
@@ -170,7 +196,8 @@ const router = createRouter({
 
 const dashboardByRole = (role) => {
     if (role === "rancher") return "rancher-dashboard";
-    return "veterinarian-dashboard";
+    if (role === "veterinarian") return "veterinarian-dashboard";
+    return "iam-sign-in";
 };
 
 router.beforeEach((to, from, next) => {
@@ -178,7 +205,10 @@ router.beforeEach((to, from, next) => {
     const isPublic = to.meta.public;
     const allowedRoles = to.meta.roles;
 
-    if (to.name === "iam-sign-in" && iamStore.isSignedIn) {
+    if (
+        (to.name === "iam-sign-in" || to.name === "iam-sign-up") &&
+        iamStore.isSignedIn
+    ) {
         return next({ name: dashboardByRole(iamStore.currentRole) });
     }
 

@@ -6,6 +6,7 @@ import useLivestockStore from "../../../livestock/application/livestock.store.js
 import useSanitaryStore from "../../../sanitary/application/sanitary.store.js";
 import useFinancialStore from "../../../financial/application/financial.store.js";
 import useActivitiesStore from "../../../activities/application/activities.store.js";
+import useIamStore from "../../../iam/application/iam.store.js";
 
 const { t } = useI18n();
 
@@ -18,6 +19,8 @@ const sanitary = useSanitaryStore();
 const financial = useFinancialStore();
 
 const activities = useActivitiesStore();
+
+const iam = useIamStore();
 
 onMounted(() => {
   if (!livestock.loaded) livestock.fetchAnimals();
@@ -36,10 +39,18 @@ const activitySeverity = (priority) => {
   return "info";
 };
 
+const visibleAnimals = computed(() => {
+  if (iam.currentRole === "veterinarian") {
+    return livestock.getAnimalsByVeterinarianId(iam.currentUserId);
+  }
+
+  return livestock.getAnimalsByOwnerId(iam.currentUserId);
+});
+
 const recentAnimals = computed(() => {
   const list = [];
 
-  livestock.animals.forEach((animal) => {
+  visibleAnimals.value.forEach((animal) => {
     if (list.length < 4) {
       list.push(animal);
     }
@@ -50,8 +61,12 @@ const recentAnimals = computed(() => {
 
 const recentActivities = computed(() => {
   const list = [];
+  const userActivities = activities.getActivitiesByUser(
+    iam.currentRole,
+    iam.currentUserId,
+  );
 
-  activities.activities.forEach((activity) => {
+  userActivities.forEach((activity) => {
     if (list.length < 4) {
       list.push(activity);
     }
@@ -59,6 +74,27 @@ const recentActivities = computed(() => {
 
   return list;
 });
+
+const visibleAnimalCount = computed(() => visibleAnimals.value.length);
+
+const visibleHealthyCount = computed(() => {
+  let total = 0;
+
+  visibleAnimals.value.forEach((animal) => {
+    if (animal.status === "Saludable") total++;
+  });
+
+  return total;
+});
+
+const visibleBalance = computed(() => {
+  if (iam.currentRole !== "rancher") return 0;
+  return financial.getBalanceByOwnerId(iam.currentUserId);
+});
+
+const visibleHighPriorityCount = computed(() =>
+  activities.getHighPriorityCountByUser(iam.currentRole, iam.currentUserId),
+);
 </script>
 
 <template>
@@ -89,8 +125,8 @@ const recentActivities = computed(() => {
       <article class="metric-card">
         <i class="pi pi-id-card"></i>
         <span>{{ t("home.animals") }}</span>
-        <strong>{{ livestock.animalCount }}</strong>
-        <small>{{ livestock.healthyCount }} {{ t("home.healthy") }}</small>
+        <strong>{{ visibleAnimalCount }}</strong>
+        <small>{{ visibleHealthyCount }} {{ t("home.healthy") }}</small>
       </article>
       <article class="metric-card">
         <i class="pi pi-heart"></i>
@@ -101,13 +137,13 @@ const recentActivities = computed(() => {
       <article class="metric-card">
         <i class="pi pi-wallet"></i>
         <span>{{ t("home.monthlyBalance") }}</span>
-        <strong>S/ {{ financial.balance }}</strong>
+        <strong>S/ {{ visibleBalance }}</strong>
         <small>{{ t("home.incomeMinusExpenses") }}</small>
       </article>
       <article class="metric-card">
         <i class="pi pi-calendar"></i>
         <span>{{ t("home.highPriority") }}</span>
-        <strong>{{ activities.highPriorityCount }}</strong>
+        <strong>{{ visibleHighPriorityCount }}</strong>
         <small>{{ t("home.upcomingActivities") }}</small>
       </article>
     </section>

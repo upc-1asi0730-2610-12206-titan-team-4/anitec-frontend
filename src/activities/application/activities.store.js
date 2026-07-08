@@ -27,6 +27,47 @@ const useActivitiesStore = defineStore("activities", () => {
         return total;
     });
 
+    function getActivitiesByOwnerId(ownerId) {
+        const ownerActivities = [];
+
+        activities.value.forEach((activity) => {
+            if (Number(activity.ownerId) === Number(ownerId)) {
+                ownerActivities.push(activity);
+            }
+        });
+
+        return ownerActivities;
+    }
+
+    function getActivitiesByVeterinarianId(veterinarianId) {
+        const veterinarianActivities = [];
+
+        activities.value.forEach((activity) => {
+            if (Number(activity.veterinarianId) === Number(veterinarianId)) {
+                veterinarianActivities.push(activity);
+            }
+        });
+
+        return veterinarianActivities;
+    }
+
+    function getActivitiesByUser(role, userId) {
+        if (role === "veterinarian") return getActivitiesByVeterinarianId(userId);
+        return getActivitiesByOwnerId(userId);
+    }
+
+    function getHighPriorityCountByUser(role, userId) {
+        let total = 0;
+
+        getActivitiesByUser(role, userId).forEach((activity) => {
+            if (activity.priority === "Alta") {
+                total++;
+            }
+        });
+
+        return total;
+    }
+
     /**
      * Loads activities from the API.
      * @returns {Promise}
@@ -142,6 +183,10 @@ const useActivitiesStore = defineStore("activities", () => {
         errors,
         loaded,
         highPriorityCount,
+        getActivitiesByOwnerId,
+        getActivitiesByVeterinarianId,
+        getActivitiesByUser,
+        getHighPriorityCountByUser,
         fetchActivities,
         getActivityById,
         addActivity,

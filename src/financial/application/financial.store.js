@@ -41,6 +41,46 @@ const useFinancialStore = defineStore("financial", () => {
 
     const balance = computed(() => incomeTotal.value - expenseTotal.value);
 
+    function getRecordsByOwnerId(ownerId) {
+        const ownerRecords = [];
+
+        records.value.forEach((record) => {
+            if (Number(record.ownerId) === Number(ownerId)) {
+                ownerRecords.push(record);
+            }
+        });
+
+        return ownerRecords;
+    }
+
+    function getIncomeTotalByOwnerId(ownerId) {
+        let total = 0;
+
+        getRecordsByOwnerId(ownerId).forEach((record) => {
+            if (record.type === "Ingreso") {
+                total = total + Number(record.amount);
+            }
+        });
+
+        return total;
+    }
+
+    function getExpenseTotalByOwnerId(ownerId) {
+        let total = 0;
+
+        getRecordsByOwnerId(ownerId).forEach((record) => {
+            if (record.type === "Egreso") {
+                total = total + Number(record.amount);
+            }
+        });
+
+        return total;
+    }
+
+    function getBalanceByOwnerId(ownerId) {
+        return getIncomeTotalByOwnerId(ownerId) - getExpenseTotalByOwnerId(ownerId);
+    }
+
     /**
      * Loads financial records from the API.
      * @returns {Promise}
@@ -160,6 +200,10 @@ const useFinancialStore = defineStore("financial", () => {
         incomeTotal,
         expenseTotal,
         balance,
+        getRecordsByOwnerId,
+        getIncomeTotalByOwnerId,
+        getExpenseTotalByOwnerId,
+        getBalanceByOwnerId,
         fetchRecords,
         getRecordById,
         addRecord,

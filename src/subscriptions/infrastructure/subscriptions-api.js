@@ -6,7 +6,7 @@ const plansEndpointPath =
     "/subscription-plans";
 
 /**
- * Handles HTTP requests for subscription plans and test payments.
+ * Handles HTTP requests for subscription plans and Stripe test payments.
  */
 export class SubscriptionsApi extends BaseApi {
     #plansEndpoint;
@@ -31,8 +31,13 @@ export class SubscriptionsApi extends BaseApi {
         return this.http.get(`/subscriptions/users/${userId}/payments`);
     }
 
-    /** @param {Object} checkout Mock checkout request. @returns {Promise} */
-    mockCheckout(checkout) {
-        return this.http.post("/subscriptions/mock-checkout", checkout);
+    /** @param {number|string} planId Subscription plan identifier. @returns {Promise} */
+    createStripeCheckout(planId) {
+        return this.http.post("/subscriptions/stripe-checkout", { planId });
+    }
+
+    /** @param {string} sessionId Stripe checkout session identifier. @returns {Promise} */
+    confirmStripeCheckout(sessionId) {
+        return this.http.get(`/subscriptions/stripe-checkout/${sessionId}/confirm`);
     }
 }

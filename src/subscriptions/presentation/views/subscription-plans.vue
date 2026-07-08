@@ -96,10 +96,10 @@ const checkout = async (plan) => {
             :label="
               isCurrentPlan(plan)
                 ? t('subscriptions.currentPlan')
-                : t('subscriptions.testPay')
+                : t('subscriptions.stripePay')
             "
-            icon="pi pi-wallet"
-            :disabled="isCurrentPlan(plan)"
+            icon="pi pi-credit-card"
+            :disabled="isCurrentPlan(plan) || subscriptions.loading"
             @click="checkout(plan)"
           />
         </div>
