@@ -4,7 +4,65 @@ import { IamApi } from "../infrastructure/iam-api.js";
 
 const api = new IamApi();
 
+const defaultDemoUsers = [
+    {
+        id: 1,
+        username: "ganadero",
+        password: "anitec123",
+        role: "rancher",
+        fullName: "Carlos Mendoza",
+        veterinarianId: 2,
+    },
+    {
+        id: 2,
+        username: "veterinaria",
+        password: "anitec123",
+        role: "veterinarian",
+        fullName: "Dra. Ana Lopez",
+    },
+    {
+        id: 3,
+        username: "maria",
+        password: "anitec123",
+        role: "rancher",
+        fullName: "Maria Gonzales",
+        veterinarianId: 2,
+    },
+    {
+        id: 4,
+        username: "jose",
+        password: "anitec123",
+        role: "rancher",
+        fullName: "Jose Quispe",
+        veterinarianId: 5,
+    },
+    {
+        id: 5,
+        username: "vetpedro",
+        password: "anitec123",
+        role: "veterinarian",
+        fullName: "Dr. Pedro Ramirez",
+    },
+    {
+        id: 6,
+        username: "rosa",
+        password: "anitec123",
+        role: "rancher",
+        fullName: "Rosa Huaman",
+        veterinarianId: 7,
+    },
+    {
+        id: 7,
+        username: "vetlucia",
+        password: "anitec123",
+        role: "veterinarian",
+        fullName: "Dra. Lucia Torres",
+    },
+];
+
 const sessionKey = "anitec-session";
+
+const demoUsersKey = "anitec-demo-users";
 
 const normalizeRole = (role) => {
     if (!role) return null;
@@ -31,6 +89,10 @@ const getResponseList = (response) => {
     return [];
 };
 
+/**
+ * Reads the session saved in localStorage.
+ * @returns {Object|null}
+ */
 const readSession = () => {
     try {
         const session = JSON.parse(localStorage.getItem(sessionKey));
@@ -48,59 +110,101 @@ const readSession = () => {
     }
 };
 
+/**
+ * Reads saved demo users or returns the default users.
+ * @returns {Object[]}
+ */
+const readDemoUsers = () => {
+    try {
+        const users = JSON.parse(localStorage.getItem(demoUsersKey));
+
+        if (users) {
+            return users;
+        }
+
+        return defaultDemoUsers;
+    } catch {
+        return defaultDemoUsers;
+    }
+};
+
+/**
+ * Saves demo users to keep assignment changes.
+ * @param {Object[]} users Updated demo users.
+ */
+const saveDemoUsers = (users) => {
+    localStorage.setItem(demoUsersKey, JSON.stringify(users));
+};
+
+/**
+ * Store that manages the current session and demo users.
+ */
 const useIamStore = defineStore("iam", () => {
     const savedSession = readSession();
 
-    const users = ref([]);
+    const demoUsers = ref(readDemoUsers());
 
     const currentUser = ref(savedSession);
 
     const errors = ref([]);
 
-    const isSignedIn = computed(() => !!currentUser.value);
+    const isSignedIn = computed(() => {
+        if (currentUser.value) {
+            return true;
+        }
+
+        return false;
+    });
 
     const currentUserId = computed(() => {
-        if (currentUser.value) return currentUser.value.id;
+        if (currentUser.value) {
+            return currentUser.value.id;
+        }
+
         return 0;
     });
 
     const currentRole = computed(() => {
-        if (currentUser.value) return currentUser.value.role;
+        if (currentUser.value) {
+            return currentUser.value.role;
+        }
+
         return null;
     });
 
     const currentFullName = computed(() => {
-        if (currentUser.value) return currentUser.value.fullName;
+        if (currentUser.value) {
+            return currentUser.value.fullName;
+        }
+
         return "";
     });
 
-    function mergeUsers(nextUsers) {
-        const usersById = new Map();
-
-        users.value.forEach((user) => {
-            usersById.set(Number(user.id), { ...user });
-        });
-
-        nextUsers.forEach((user) => {
-            usersById.set(Number(user.id), { ...user });
-        });
-
-        users.value = Array.from(usersById.values());
-    }
-
+    /**
+     * Loads platform users from the backend.
+     * @returns {Promise<Object[]>}
+     */
     function fetchUsers() {
         return api
             .getUsers()
             .then((response) => {
-                users.value = getResponseList(response).map(toUserFromResource);
-                return users.value;
+                demoUsers.value = getResponseList(response).map(
+                    toUserFromResource,
+                );
+                saveDemoUsers(demoUsers.value);
+                return demoUsers.value;
             })
             .catch((error) => {
                 errors.value.push(error);
-                return users.value;
+                return demoUsers.value;
             });
     }
 
+    /**
+     * Synchronizes veterinarian clients from the backend.
+     * @param {number|string} veterinarianId Veterinarian identifier.
+     * @returns {Promise<Object[]>}
+     */
     function fetchVeterinarianClients(veterinarianId = currentUserId.value) {
         return api
             .getVeterinarianClients(veterinarianId)
@@ -123,21 +227,32 @@ const useIamStore = defineStore("iam", () => {
                     };
                 });
 
-                mergeUsers(clients);
+                const usersById = new Map();
 
-                users.value = users.value.map((user) => {
-                    if (
-                        user.role === "rancher" &&
-                        Number(user.veterinarianId) ===
-                            Number(veterinarianId) &&
-                        !clientIds.includes(Number(user.id))
-                    ) {
-                        return { ...user, veterinarianId: null };
-                    }
-
-                    return user;
+                demoUsers.value.forEach((user) => {
+                    usersById.set(Number(user.id), { ...user });
                 });
 
+                clients.forEach((client) => {
+                    usersById.set(Number(client.id), client);
+                });
+
+                demoUsers.value = Array.from(usersById.values()).map(
+                    (user) => {
+                        if (
+                            user.role === "rancher" &&
+                            Number(user.veterinarianId) ===
+                                Number(veterinarianId) &&
+                            !clientIds.includes(Number(user.id))
+                        ) {
+                            return { ...user, veterinarianId: null };
+                        }
+
+                        return user;
+                    },
+                );
+
+                saveDemoUsers(demoUsers.value);
                 return clients;
             })
             .catch((error) => {
@@ -146,6 +261,11 @@ const useIamStore = defineStore("iam", () => {
             });
     }
 
+    /**
+     * Lists ranchers that can be added to a veterinarian portfolio.
+     * @param {number|string} veterinarianId Veterinarian identifier.
+     * @returns {Promise<Object[]>}
+     */
     function fetchAvailableRanchers(veterinarianId = currentUserId.value) {
         return api
             .getAvailableRanchers(veterinarianId)
@@ -155,8 +275,18 @@ const useIamStore = defineStore("iam", () => {
                     role: "rancher",
                     veterinarianId: null,
                 }));
+                const usersById = new Map();
 
-                mergeUsers(ranchers);
+                demoUsers.value.forEach((user) => {
+                    usersById.set(Number(user.id), { ...user });
+                });
+
+                ranchers.forEach((rancher) => {
+                    usersById.set(Number(rancher.id), rancher);
+                });
+
+                demoUsers.value = Array.from(usersById.values());
+                saveDemoUsers(demoUsers.value);
                 return ranchers;
             })
             .catch((error) => {
@@ -165,6 +295,12 @@ const useIamStore = defineStore("iam", () => {
             });
     }
 
+    /**
+     * Validates credentials in the backend, saves the session, and redirects by role.
+     * @param {Object} credentials Entered username and password.
+     * @param {Object} router Vue Router instance used after login.
+     * @returns {Promise<boolean>}
+     */
     async function signIn(credentials, router) {
         try {
             const username = credentials.username
@@ -201,32 +337,57 @@ const useIamStore = defineStore("iam", () => {
                 router.push({ name: "veterinarian-dashboard" });
 
             return true;
-        } catch {
-            errors.value = [new Error("Credenciales invalidas o API no disponible")];
+        } catch (error) {
+            const username = credentials.username
+                ? credentials.username.trim()
+                : "";
+            const demoUser =
+                demoUsers.value.find(
+                    (u) =>
+                        String(u.username) === String(username) &&
+                        String(u.password) === String(credentials.password),
+                ) ||
+                defaultDemoUsers.find(
+                    (u) =>
+                        String(u.username) === String(username) &&
+                        String(u.password) === String(credentials.password),
+                );
+
+            if (demoUser) {
+                const session = {
+                    id: demoUser.id,
+                    username: demoUser.username,
+                    role: normalizeRole(demoUser.role),
+                    fullName: demoUser.fullName || demoUser.username,
+                    token: `demo-token-${demoUser.id}`,
+                };
+
+                currentUser.value = session;
+                errors.value = [];
+                localStorage.setItem(sessionKey, JSON.stringify(session));
+                localStorage.setItem("token", session.token);
+
+                if (demoUser.role === "rancher")
+                    router.push({ name: "rancher-dashboard" });
+                if (demoUser.role === "veterinarian")
+                    router.push({ name: "veterinarian-dashboard" });
+
+                return true;
+            }
+
+            errors.value = [
+                new Error("Credenciales invalidas o API no disponible"),
+            ];
             return false;
         }
     }
 
-    async function signUp(resource, router) {
-        try {
-            await api.signUp({
-                username: resource.username ? resource.username.trim() : "",
-                password: resource.password,
-                fullName: resource.fullName ? resource.fullName.trim() : "",
-                role: resource.role,
-            });
-
-            errors.value = [];
-
-            if (router) router.push({ name: "iam-sign-in" });
-
-            return true;
-        } catch {
-            errors.value = [new Error("No se pudo registrar el usuario")];
-            return false;
-        }
-    }
-
+    /**
+     * Assigns a rancher to a veterinarian portfolio.
+     * @param {number|string} rancherId Rancher identifier.
+     * @param {number|string} veterinarianId Veterinarian identifier.
+     * @returns {Promise<boolean>}
+     */
     async function assignRancherToVeterinarian(
         rancherId,
         veterinarianId = currentUserId.value,
@@ -238,18 +399,51 @@ const useIamStore = defineStore("iam", () => {
             return false;
         }
 
-        const rancherIndex = users.value.findIndex(
-            (user) =>
+        let rancherIndex = -1;
+
+        for (let i = 0; i < demoUsers.value.length; i++) {
+            const user = demoUsers.value[i];
+
+            if (
                 user.role === "rancher" &&
-                Number(user.id) === Number(rancherId),
-        );
+                Number(user.id) === Number(rancherId)
+            ) {
+                rancherIndex = i;
+            }
+        }
 
-        if (rancherIndex === -1) return false;
+        let veterinarian = null;
 
-        users.value[rancherIndex].veterinarianId = Number(veterinarianId);
+        for (let i = 0; i < demoUsers.value.length; i++) {
+            const user = demoUsers.value[i];
+
+            if (
+                user.role === "veterinarian" &&
+                Number(user.id) === Number(veterinarianId)
+            ) {
+                veterinarian = user;
+            }
+        }
+
+        if (rancherIndex === -1) {
+            return false;
+        }
+
+        if (!veterinarian) {
+            return false;
+        }
+
+        demoUsers.value[rancherIndex].veterinarianId = veterinarian.id;
+        saveDemoUsers(demoUsers.value);
         return true;
     }
 
+    /**
+     * Removes the relationship between a rancher and a veterinarian.
+     * @param {number|string} rancherId Rancher identifier.
+     * @param {number|string} veterinarianId Veterinarian identifier.
+     * @returns {Promise<boolean>}
+     */
     async function unassignRancherFromVeterinarian(
         rancherId,
         veterinarianId = currentUserId.value,
@@ -261,25 +455,37 @@ const useIamStore = defineStore("iam", () => {
             return false;
         }
 
-        const rancherIndex = users.value.findIndex(
-            (user) =>
+        let rancherIndex = -1;
+
+        for (let i = 0; i < demoUsers.value.length; i++) {
+            const user = demoUsers.value[i];
+
+            if (
                 user.role === "rancher" &&
                 Number(user.id) === Number(rancherId) &&
-                Number(user.veterinarianId) === Number(veterinarianId),
-        );
+                Number(user.veterinarianId) === Number(veterinarianId)
+            ) {
+                rancherIndex = i;
+            }
+        }
 
         if (rancherIndex === -1) return false;
 
-        users.value[rancherIndex].veterinarianId = null;
+        demoUsers.value[rancherIndex].veterinarianId = null;
+        saveDemoUsers(demoUsers.value);
         return true;
     }
 
+    /**
+     * Closes the current session and clears saved data.
+     * @param {Object} router Vue Router instance used to return to login.
+     */
     function signOut(router) {
         currentUser.value = null;
-        users.value = [];
         errors.value = [];
         localStorage.removeItem(sessionKey);
         localStorage.removeItem("token");
+        localStorage.removeItem(demoUsersKey);
 
         if (router) {
             router.push({ name: "iam-sign-in" });
@@ -287,7 +493,7 @@ const useIamStore = defineStore("iam", () => {
     }
 
     return {
-        users,
+        demoUsers,
         errors,
         currentUser,
         currentUserId,
@@ -298,7 +504,6 @@ const useIamStore = defineStore("iam", () => {
         fetchVeterinarianClients,
         fetchAvailableRanchers,
         signIn,
-        signUp,
         signOut,
         assignRancherToVeterinarian,
         unassignRancherFromVeterinarian,
