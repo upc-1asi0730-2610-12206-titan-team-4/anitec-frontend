@@ -148,6 +148,8 @@ const useIamStore = defineStore("iam", () => {
 
     const errors = ref([]);
 
+    const users = computed(() => demoUsers.value);
+
     const isSignedIn = computed(() => {
         if (currentUser.value) {
             return true;
@@ -526,6 +528,7 @@ const useIamStore = defineStore("iam", () => {
     }
 
     return {
+        users,
         demoUsers,
         errors,
         currentUser,
