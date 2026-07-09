@@ -148,6 +148,8 @@ const useIamStore = defineStore("iam", () => {
 
     const errors = ref([]);
 
+    const users = computed(() => demoUsers.value);
+
     const isSignedIn = computed(() => {
         if (currentUser.value) {
             return true;
@@ -301,6 +303,39 @@ const useIamStore = defineStore("iam", () => {
      * @param {Object} router Vue Router instance used after login.
      * @returns {Promise<boolean>}
      */
+    async function signUp(resource, router) {
+        try {
+            const fullName = resource.fullName ? resource.fullName.trim() : "";
+            const username = resource.username ? resource.username.trim() : "";
+            const role = resource.role || "Rancher";
+
+            await api.signUp({
+                fullName,
+                username,
+                password: resource.password,
+                role,
+            });
+
+            await fetchUsers();
+
+            return signIn(
+                {
+                    username,
+                    password: resource.password,
+                },
+                router,
+            );
+        } catch (error) {
+            const message =
+                error.response?.data?.message ||
+                error.response?.data?.title ||
+                "No se pudo registrar el usuario";
+
+            errors.value = [new Error(message)];
+            return false;
+        }
+    }
+
     async function signIn(credentials, router) {
         try {
             const username = credentials.username
@@ -493,6 +528,7 @@ const useIamStore = defineStore("iam", () => {
     }
 
     return {
+        users,
         demoUsers,
         errors,
         currentUser,
@@ -503,6 +539,7 @@ const useIamStore = defineStore("iam", () => {
         fetchUsers,
         fetchVeterinarianClients,
         fetchAvailableRanchers,
+        signUp,
         signIn,
         signOut,
         assignRancherToVeterinarian,
